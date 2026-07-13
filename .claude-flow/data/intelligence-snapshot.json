@@ -1,0 +1,1578 @@
+[
+  {
+    "timestamp": 1782906621550,
+    "nodes": 23,
+    "edges": 210,
+    "pageRankSum": 1.0000000000000002,
+    "confidences": [
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.22426322271907298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.12122333807999737,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.08506901218028083,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.06628754955347703,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.5,
+        "pageRank": 0.054670151389813876,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.046726631383266624,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.040928441272492656,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.03649670316337901,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-6rty",
+        "summary": "Frequently edited: ui.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.032991373137178925,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-hypy",
+        "summary": "Frequently edited: AppMap.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.03014440417802581,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1782932619382,
+    "nodes": 23,
+    "edges": 210,
+    "pageRankSum": 1.0000000000000002,
+    "confidences": [
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.22426322271907298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.12122333807999737,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.08506901218028083,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.06628754955347703,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.5,
+        "pageRank": 0.054670151389813876,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.046726631383266624,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.040928441272492656,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.03649670316337901,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-6rty",
+        "summary": "Frequently edited: ui.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.032991373137178925,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-hypy",
+        "summary": "Frequently edited: AppMap.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.03014440417802581,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1782935036535,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.5,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.5,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1782981023068,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.5,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.5,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1782984805555,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.5,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.5,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1782991916881,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.495,
+      0.495,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.5,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.5,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.5,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.5,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1782993282944,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.5,
+      0.5
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.5,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.5,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.495,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.495,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.495,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.495,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.495,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.495,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.495,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.495,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1783063921528,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495,
+      0.495
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.495,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.495,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.495,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.495,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.495,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.495,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.495,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.495,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.495,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.495,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1783065119560,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.49,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.49,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.49,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.49,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.49,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.49,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.49,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.49,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.49,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.49,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1783156066008,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49,
+      0.49
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.49,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.49,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.49,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.49,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.49,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.49,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.49,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.49,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.49,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.49,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1783328758994,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.48,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.48,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.48,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.48,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.48,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.48,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.48,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.48,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.48,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.48,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  },
+  {
+    "timestamp": 1783332045166,
+    "nodes": 25,
+    "edges": 253,
+    "pageRankSum": 1,
+    "confidences": [
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48,
+      0.48
+    ],
+    "accessCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "topPatterns": [
+      {
+        "id": "insight-1782935036530-3u47",
+        "summary": "Frequently edited: app.css (5x)",
+        "confidence": 0.48,
+        "pageRank": 0.21820167758738301,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782935036530-z3kj",
+        "summary": "Frequently edited: Landing.tsx (4x)",
+        "confidence": 0.48,
+        "pageRank": 0.11794679541362298,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-17ly",
+        "summary": "Frequently edited: AppLayout.tsx (4x)",
+        "confidence": 0.48,
+        "pageRank": 0.0827696701697138,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-wk7g",
+        "summary": "Frequently edited: admin.html (3x)",
+        "confidence": 0.48,
+        "pageRank": 0.06449584837073215,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-di0u",
+        "summary": "Frequently edited: admin.css (3x)",
+        "confidence": 0.48,
+        "pageRank": 0.05319245722832371,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-65w9",
+        "summary": "Frequently edited: index.html (7x)",
+        "confidence": 0.48,
+        "pageRank": 0.04546364429008121,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-h8a3",
+        "summary": "Frequently edited: style.css (6x)",
+        "confidence": 0.48,
+        "pageRank": 0.03982217552485882,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-8x2g",
+        "summary": "Frequently edited: DashboardScreen.tsx (7x)",
+        "confidence": 0.48,
+        "pageRank": 0.03551022496097817,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-t9zz",
+        "summary": "Frequently edited: ProfileScreen.tsx (3x)",
+        "confidence": 0.48,
+        "pageRank": 0.032099642474583766,
+        "accessCount": 0
+      },
+      {
+        "id": "insight-1782906621545-fwyq",
+        "summary": "Frequently edited: OrderDetailScreen.tsx (3x)",
+        "confidence": 0.48,
+        "pageRank": 0.029329626034863596,
+        "accessCount": 0
+      }
+    ]
+  }
+]

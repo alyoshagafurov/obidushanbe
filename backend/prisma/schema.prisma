@@ -1,0 +1,286 @@
+// ОБИ ДУШАНБЕ — схема базы данных (PostgreSQL + Prisma).
+// Деньги хранятся как Decimal(10,2) в сомони (TJS). Оплата наличными при доставке —
+// в системе деньги не проводятся, сумма заказа лишь фиксируется для статистики.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  CLIENT
+  COURIER
+  OPERATOR
+  ADMIN
+  CASHIER
+}
+
+enum OrderStatus {
+  NEW
+  TAKEN
+  ACCEPTED
+  ON_WAY
+  DELIVERED
+  CANCELLED
+}
+
+enum ProductType {
+  WATER_20L
+  WATER_05L
+  COOLER
+  PUMP_MANUAL
+  PUMP_ELECTRIC
+  OTHER
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  name      String?
+  role      UserRole @default(CLIENT)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courierProfile  CourierProfile?
+  addresses       Address[]
+  // заказы, где пользователь — клиент
+  ordersAsClient  Order[]         @relation("OrderClient")
+  // заказы, созданные пользователем-оператором
+  ordersAsOperator Order[]        @relation("OrderOperator")
+  // заказы, взятые пользователем-доставщиком
+  ordersAsCourier Order[]         @relation("OrderCourier")
+  reviewsWritten  Review[]        @relation("ReviewAuthor")
+  reviewsReceived Review[]        @relation("ReviewCourier")
+  messagesSent    ChatMessage[]   @relation("MessageSender")
+  messagesReceived ChatMessage[]  @relation("MessageRecipient")
+  // Зарплата (роль кассир)
+  deliveryEntries    DeliveryEntry[] @relation("CourierDeliveryEntries")
+  deliveryEntriesMade DeliveryEntry[] @relation("CashierDeliveryEntries")
+  payoutsReceived    Payout[]        @relation("CourierPayouts")
+  payoutsMade        Payout[]        @relation("CashierPayouts")
+  // Складские отчёты (обмен тары)
+  warehouseAsCourier WarehouseReport[] @relation("CourierWarehouse")
+  warehouseAsCashier WarehouseReport[] @relation("CashierWarehouse")
+
+  @@index([role])
+}
+
+model CourierProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photoUrl        String?
+  bio             String?
+  // Территория обслуживания: GeoJSON-полигон или описание зоны. Хранится как JSON.
+  territory       Json?
+  // Кэш рейтинга (средняя оценка) и счётчики — пересчитываются при новом отзыве/доставке.
+  ratingCache     Float    @default(0)
+  reviewsCount    Int      @default(0)
+  deliveriesCount Int      @default(0)
+  // Ставка зарплаты за одну доставленную бутыль 20л (сомони). Индивидуальная:
+  // городским — меньше, дальнобойщикам — больше. По умолчанию 1.60.
+  bottleRate      Decimal  @db.Decimal(10, 2) @default(1.60)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  clientId  String
+  client    User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  label     String?
+  lat       Float?
+  lng       Float?
+  text      String?
+  landmark  String?
+  createdAt DateTime @default(now())
+
+  @@index([clientId])
+}
+
+model Product {
+  id        String      @id @default(cuid())
+  name      String
+  type      ProductType @default(OTHER)
+  price     Decimal     @db.Decimal(10, 2)
+  photoUrl  String?
+  isActive  Boolean     @default(true)
+  sortOrder Int         @default(0)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  orderItems OrderItem[]
+
+  @@index([isActive])
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  status     OrderStatus @default(NEW)
+
+  clientId   String
+  client     User        @relation("OrderClient", fields: [clientId], references: [id])
+
+  // оператор, создавший заказ за клиента (если заказ принят по телефону)
+  operatorId String?
+  operator   User?       @relation("OrderOperator", fields: [operatorId], references: [id])
+
+  // доставщик, взявший заказ (null, пока не взят)
+  courierId  String?
+  courier    User?       @relation("OrderCourier", fields: [courierId], references: [id])
+
+  // снимок адреса (фиксируется в момент заказа, не зависит от изменений Address)
+  addrLat      Float?
+  addrLng      Float?
+  addrText     String?
+  addrLandmark String?
+
+  total      Decimal     @db.Decimal(10, 2) @default(0)
+
+  createdAt   DateTime   @default(now())
+  takenAt     DateTime?  // когда доставщик взял заказ
+  deliveredAt DateTime?
+  cancelledAt DateTime?
+
+  items   OrderItem[]
+  review  Review?
+  messages ChatMessage[]
+
+  @@index([status])
+  @@index([courierId])
+  @@index([clientId])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  // цена за единицу на момент заказа (снимок, не зависит от изменения Product.price)
+  unitPrice Decimal @db.Decimal(10, 2)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  clientId  String
+  client    User     @relation("ReviewAuthor", fields: [clientId], references: [id])
+  courierId String
+  courier   User     @relation("ReviewCourier", fields: [courierId], references: [id])
+  rating    Int // 1..5
+  text      String?
+  createdAt DateTime @default(now())
+
+  @@index([courierId])
+}
+
+model ChatMessage {
+  id          String   @id @default(cuid())
+  senderId    String
+  sender      User     @relation("MessageSender", fields: [senderId], references: [id])
+  recipientId String
+  recipient   User     @relation("MessageRecipient", fields: [recipientId], references: [id])
+  orderId     String?
+  order       Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  text        String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([orderId])
+}
+
+model SmsCode {
+  id        String   @id @default(cuid())
+  phone     String
+  // храним только хеш кода (никогда не в открытом виде)
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  consumed  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+// Запись кассира: сколько бутылей 20л доставил доставщик за конкретный день.
+// Вводится вручную кассиром вечером. amount = bottles20 * rate (снимок ставки).
+model DeliveryEntry {
+  id        String   @id @default(cuid())
+  courierId String
+  courier   User     @relation("CourierDeliveryEntries", fields: [courierId], references: [id])
+  date      DateTime // нормализуется к началу дня (00:00)
+  bottles20 Int
+  rate      Decimal  @db.Decimal(10, 2)
+  amount    Decimal  @db.Decimal(10, 2)
+  cashierId String
+  cashier   User     @relation("CashierDeliveryEntries", fields: [cashierId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([courierId, date])
+  @@index([date])
+  @@index([courierId])
+}
+
+// Выплата доставщику (обнуляет/уменьшает «копилку»).
+model Payout {
+  id        String   @id @default(cuid())
+  courierId String
+  courier   User     @relation("CourierPayouts", fields: [courierId], references: [id])
+  amount    Decimal  @db.Decimal(10, 2)
+  note      String?
+  cashierId String
+  cashier   User     @relation("CashierPayouts", fields: [cashierId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([courierId])
+}
+
+// Складской отчёт кассира: обмен тары по доставщику (2–3 раза в день).
+// fullTaken — взял полных со склада; emptyReturned — принёс пустых;
+// fullReturned — вернул полных (непроданный остаток). Деньги считаются на лету.
+model WarehouseReport {
+  id            String   @id @default(cuid())
+  courierId     String
+  courier       User     @relation("CourierWarehouse", fields: [courierId], references: [id])
+  cashierId     String
+  cashier       User     @relation("CashierWarehouse", fields: [cashierId], references: [id])
+  fullTaken     Int
+  emptyReturned Int
+  fullReturned  Int      @default(0)
+  waterPrice    Decimal  @db.Decimal(10, 2)
+  bottlePrice   Decimal  @db.Decimal(10, 2)
+  note          String?
+  createdAt     DateTime @default(now())
+
+  @@index([courierId])
+  @@index([createdAt])
+}
+
+// Журнал подозрительных действий (множественные неудачные входы и т.п.).
+model SecurityLog {
+  id        String   @id @default(cuid())
+  event     String // напр. "LOGIN_FAILED", "SMS_RATE_LIMIT", "RACE_LOST"
+  phone     String?
+  userId    String?
+  ip        String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([event])
+  @@index([phone])
+}

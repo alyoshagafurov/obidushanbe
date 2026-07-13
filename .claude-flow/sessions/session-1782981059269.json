@@ -1,0 +1,14 @@
+{
+  "id": "session-1782981059269",
+  "startedAt": "2026-07-02T08:30:59.269Z",
+  "cwd": "/Users/mobisop/Оби Душанбе",
+  "context": {},
+  "metrics": {
+    "edits": 0,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "endedAt": "2026-07-02T09:33:25.557Z",
+  "duration": 3746289
+}

@@ -1,0 +1,24 @@
+{
+  "name": "obi-dushanbe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ОБИ ДУШАНБЕ — служба доставки воды. Монорепо: mobile (Expo) + backend (Express) + shared (общие типы).",
+  "workspaces": [
+    "shared",
+    "backend",
+    "mobile",
+    "web"
+  ],
+  "scripts": {
+    "build:shared": "npm run build --workspace shared",
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:mobile": "npm run start --workspace mobile",
+    "dev:web": "npm run dev --workspace web",
+    "prisma:migrate": "npm run prisma:migrate --workspace backend",
+    "prisma:seed": "npm run prisma:seed --workspace backend",
+    "postinstall": "npm run build --workspace shared"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

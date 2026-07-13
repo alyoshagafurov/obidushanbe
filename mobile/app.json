@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "ОБИ ДУШАНБЕ",
+    "slug": "obi-dushanbe",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "obidushanbe",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFFFFF"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.obidushanbe.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Нужно для определения адреса доставки на карте."
+      }
+    },
+    "android": {
+      "package": "com.obidushanbe.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+      "config": {
+        "googleMaps": {
+          "apiKey": "ВСТАВЬТЕ_GOOGLE_MAPS_API_KEY"
+        }
+      }
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Нужно для определения адреса доставки на карте."
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:4000",
+      "mapProvider": "google",
+      "mapApiKey": ""
+    }
+  }
+}

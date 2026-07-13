@@ -1,0 +1,39 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# env
+.env
+.env.local
+**/.env
+!**/.env.example
+
+# builds
+dist/
+build/
+**/dist/
+**/build/
+
+# expo
+mobile/.expo/
+mobile/.expo-shared/
+mobile/web-build/
+*.tsbuildinfo
+
+# prisma
+backend/prisma/*.db
+
+# logs
+*.log
+npm-debug.log*
+
+# os
+.DS_Store
+
+# misc
+coverage/
+.idea/
+.vscode/
+
+# local uploaded files
+backend/uploads/
