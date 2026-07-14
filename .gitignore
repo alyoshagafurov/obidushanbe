@@ -37,3 +37,6 @@ coverage/
 
 # local uploaded files
 backend/uploads/
+
+# local tooling data (ruflo/claude-flow) — noisy, not project code
+.claude-flow/

@@ -15,8 +15,7 @@
     "dev:mobile": "npm run start --workspace mobile",
     "dev:web": "npm run dev --workspace web",
     "prisma:migrate": "npm run prisma:migrate --workspace backend",
-    "prisma:seed": "npm run prisma:seed --workspace backend",
-    "postinstall": "npm run build --workspace shared"
+    "prisma:seed": "npm run prisma:seed --workspace backend"
   },
   "engines": {
     "node": ">=20"

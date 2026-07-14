@@ -1,0 +1,15 @@
+# Контекст сборки — КОРЕНЬ монорепо. Исключаем тяжёлое/секретное,
+# но НЕ трогаем package.json воркспейсов и исходники shared/backend.
+**/node_modules
+**/dist
+**/.env
+!**/.env.example
+.git
+.gitignore
+*.log
+backend/uploads
+mobile/.expo
+web/dist
+**/.DS_Store
+.claude
+.claude-flow
