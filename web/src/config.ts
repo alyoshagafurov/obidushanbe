@@ -1,5 +1,12 @@
-/** Конфигурация веб-приложения. Адрес API можно переопределить через VITE_API_URL. */
-const apiUrl = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:4000';
+/**
+ * Конфигурация веб-приложения.
+ * apiUrl:
+ *  - если задан VITE_API_URL — используем его;
+ *  - иначе в dev → http://localhost:4000, в проде → '' (тот же домен, /api same-origin).
+ * Это значит: собранный сайт по умолчанию ходит на API того же домена, откуда открыт.
+ */
+const envApi = import.meta.env.VITE_API_URL as string | undefined;
+const apiUrl = envApi !== undefined ? envApi : import.meta.env.DEV ? 'http://localhost:4000' : '';
 
 export const config = {
   apiUrl,

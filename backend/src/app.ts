@@ -1,4 +1,6 @@
 /** Сборка Express-приложения: безопасность, маршруты, обработка ошибок. */
+import path from 'path';
+import fs from 'fs';
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -24,9 +26,15 @@ export function createApp() {
   // За прокси (Railway) — доверяем заголовку для корректного req.ip и rate-limit.
   app.set('trust proxy', 1);
 
-  // Заголовки безопасности. CORP=cross-origin, чтобы картинки из /uploads
-  // могли грузиться в мобильном приложении (другой origin).
-  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+  // Заголовки безопасности. CSP выключен, т.к. с этого же сервера отдаётся
+  // SPA-сайт (иначе строгий CSP ломает загрузку его ассетов). CORP=cross-origin,
+  // чтобы картинки из /uploads грузились и в мобильном приложении (другой origin).
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    }),
+  );
 
   // Строгий CORS: либо '*', либо явный список origin из .env.
   app.use(
@@ -61,7 +69,19 @@ export function createApp() {
   app.use('/api/admin', adminRouter);
   app.use('/api/cashier', cashierRouter);
 
-  // 404 и единый обработчик ошибок (последними).
+  // JSON-404 только для несуществующих /api/* маршрутов.
+  app.use('/api', notFoundHandler);
+
+  // Раздача собранного веб-сайта (если он есть в образе): статика + SPA-fallback,
+  // чтобы клиентские маршруты (/, /login, /app/...) открывались по прямой ссылке.
+  const webDist = process.env.WEB_DIST ?? path.resolve(process.cwd(), '..', 'web', 'dist');
+  const webIndex = path.join(webDist, 'index.html');
+  if (fs.existsSync(webIndex)) {
+    app.use(express.static(webDist));
+    app.get('*', (_req, res) => res.sendFile(webIndex));
+  }
+
+  // Финальный 404 (для не-GET запросов или когда сайт не собран) и обработчик ошибок.
   app.use(notFoundHandler);
   app.use(errorHandler);
 
