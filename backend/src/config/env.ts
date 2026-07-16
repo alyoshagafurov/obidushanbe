@@ -30,6 +30,11 @@ const schema = z.object({
   // На реальном устройстве замените на http://<IP-ПК>:4000.
   BACKEND_PUBLIC_URL: z.string().default('http://localhost:4000'),
 
+  // Демо-режим: SMS-код всегда "0000" и возвращается в ответе (для показа на
+  // боевом сайте без реального SMS-провайдера). Задать DEMO_MODE=true в .env.
+  // ВНИМАНИЕ: для настоящего запуска выключить и подключить SMS-провайдера.
+  DEMO_MODE: z.string().optional(),
+
   // SMS-провайдер: dev | <будущие провайдеры>
   SMS_PROVIDER: z.enum(['dev', 'osonsms', 'twilio']).default('dev'),
   SMS_API_KEY: z.string().optional(),
@@ -58,6 +63,8 @@ if (!parsed.success) {
 export const env = parsed.data;
 export const isDev = env.NODE_ENV === 'development';
 export const isProd = env.NODE_ENV === 'production';
+// Демо-режим: включён в dev ИЛИ при DEMO_MODE=true (даже в проде).
+export const isDemo = isDev || env.DEMO_MODE === 'true';
 
 export const corsOrigins =
   env.CORS_ORIGINS === '*' ? '*' : env.CORS_ORIGINS.split(',').map((s) => s.trim());

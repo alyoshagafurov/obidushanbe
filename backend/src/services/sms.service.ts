@@ -3,7 +3,7 @@
  * реально SMS не отправляется). Чтобы подключить настоящего провайдера (OsonSMS,
  * Twilio и т.п.) — реализуйте соответствующий метод и задайте SMS_PROVIDER в .env.
  */
-import { env, isDev } from '../config/env';
+import { env, isDemo } from '../config/env';
 import { logger } from '../lib/logger';
 import { DEV_SMS_CODE, SMS_CODE_LENGTH } from '@obi/shared';
 
@@ -61,7 +61,7 @@ const provider = getProvider();
  * для удобства разработки. В проде — случайный.
  */
 export function generateSmsCode(): string {
-  if (isDev && env.SMS_PROVIDER === 'dev') return DEV_SMS_CODE;
+  if (isDemo && env.SMS_PROVIDER === 'dev') return DEV_SMS_CODE;
   const max = 10 ** SMS_CODE_LENGTH;
   return Math.floor(Math.random() * max)
     .toString()

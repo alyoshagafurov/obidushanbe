@@ -19,7 +19,7 @@ import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../lib/jw
 import { BadRequest, Forbidden, TooManyRequests, Unauthorized } from '../lib/errors';
 import { securityLog } from '../lib/logger';
 import { generateSmsCode, sendVerificationCode } from './sms.service';
-import { env, isDev } from '../config/env';
+import { env, isDemo } from '../config/env';
 import { toMeResponse } from './mappers';
 
 /** Запросить SMS-код для входа. */
@@ -43,8 +43,8 @@ export async function requestCode(phone: string, ip?: string): Promise<{ devCode
     throw BadRequest('Не удалось отправить SMS. Попробуйте позже.');
   }
 
-  // В dev отдаём код в ответе, чтобы было удобно тестировать.
-  if (isDev && env.SMS_PROVIDER === 'dev') return { devCode: DEV_SMS_CODE };
+  // В демо-режиме отдаём код в ответе (удобно тестировать / показывать).
+  if (isDemo && env.SMS_PROVIDER === 'dev') return { devCode: DEV_SMS_CODE };
   return {};
 }
 
