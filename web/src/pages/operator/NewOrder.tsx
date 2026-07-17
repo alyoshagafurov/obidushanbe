@@ -56,7 +56,7 @@ export function NewOrder() {
   return (
     <>
       <div className="page__head"><h1>Новый заказ</h1></div>
-      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', alignItems: 'start' }}>
+      <div className="split">
         <div>
           <div className="card">
             <label className="label">Телефон клиента</label>

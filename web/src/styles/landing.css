@@ -64,7 +64,9 @@
 .heroL__bottle { position: absolute; left: 50%; top: 50%; height: 420px; width: auto; object-fit: contain;
   transform: translate(-50%,-50%);
   filter: drop-shadow(0 30px 40px rgba(11,60,110,.22)); animation: floatCenter 6s ease-in-out infinite; z-index: 2; }
-@keyframes floatCenter { 0%,100% { transform: translate(-50%,-54%); } 50% { transform: translate(-50%,-46%); } }
+/* Мягкое парение с малой амплитудой — бутыль стоит «на месте», а не улетает вверх.
+   Центр -48% (чуть ниже геометрического центра) — оптически бутыль стоит на подиуме. */
+@keyframes floatCenter { 0%,100% { transform: translate(-50%,-50%); } 50% { transform: translate(-50%,-45%); } }
 .heroL .fchip { z-index: 3; }
 
 .fchip { position: absolute; z-index: 2; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 16px;

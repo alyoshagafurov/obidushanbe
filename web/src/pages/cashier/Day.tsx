@@ -43,6 +43,7 @@ export function Day() {
       {!data?.length ? <Empty text="Нет активных доставщиков" icon="🚚" /> : (
         <>
           <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div className="table-wrap">
             <table className="table">
               <thead><tr><th>Доставщик</th><th>Ставка</th><th>Бутылей 20л</th><th>По приложению</th><th>Сумма</th><th></th></tr></thead>
               <tbody>
@@ -64,6 +65,7 @@ export function Day() {
                 })}
               </tbody>
             </table>
+            </div>
           </div>
           <div className="revenue" style={{ marginTop: 16 }}>
             <div className="revenue__label">Итого за день</div>

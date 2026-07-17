@@ -33,7 +33,7 @@ export function Dashboard() {
         <><Skeleton h={130} r={20} /><div className="kpis" style={{ marginTop: 16 }}>{[0, 1, 2].map((i) => <Skeleton key={i} h={90} r={20} />)}</div></>
       ) : isError || !data ? <ErrorBox message={apiError(error)} onRetry={refetch} /> : (
         <>
-          <div className="grid" style={{ gridTemplateColumns: '1.4fr 1fr', alignItems: 'stretch' }}>
+          <div className="split split--wide" style={{ alignItems: 'stretch' }}>
             <div className="revenue" style={{ margin: 0 }}>
               <div className="revenue__label">Выручка за период</div>
               <div className="revenue__value">{money(data.revenue)}</div>

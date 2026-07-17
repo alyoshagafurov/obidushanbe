@@ -61,9 +61,14 @@
 /* Товар-плитка (премиум) */
 .prod { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: 16px; box-shadow: var(--sh-soft); display: flex; flex-direction: column; transition: transform .18s ease, box-shadow .25s ease; }
 .prod:hover { transform: translateY(-5px); box-shadow: 0 26px 54px rgba(11,27,43,.14); }
-.prod__img { height: 150px; display: grid; place-items: center; border-radius: var(--r-md); margin-bottom: 6px; background: transparent; position: relative; }
+.prod__img { height: 150px; border-radius: var(--r-md); margin-bottom: 6px; background: transparent; position: relative; }
 .prod__img::after { content: ''; position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); width: 62%; height: 16px; border-radius: 50%; background: radial-gradient(closest-side, rgba(11,60,110,.22), transparent); }
-.prod__img img { height: 92%; object-fit: contain; position: relative; z-index: 1; filter: drop-shadow(0 10px 16px rgba(11,60,110,.14)); }
+/* Абсолютное центрирование: max-height/max-width РЕЗОЛВЯТСЯ от заданной высоты
+   бокса (у абсолютных элементов % высоты работает), поэтому картинка любой
+   пропорции гарантированно вписывается — на любом брейкпоинте, без переполнения. */
+.prod__img img { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  max-height: 88%; max-width: 92%; width: auto; height: auto; object-fit: contain;
+  z-index: 1; filter: drop-shadow(0 10px 16px rgba(11,60,110,.14)); }
 .prod__name { font-weight: 700; min-height: 44px; }
 .prod__foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 10px; }
 .prod__price { font-size: 22px; font-weight: 800; letter-spacing: -.02em; background: linear-gradient(90deg, var(--ink), var(--primary)); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -138,9 +143,142 @@
 .iconbtn:hover { filter: brightness(1.1); }
 .iconbtn:active { transform: scale(.92); }
 
+/* Двухколоночная секция (деталь заказа, чекаут, склад и т.п.).
+   На десктопе — 2 колонки, на мобиле схлопывается в одну. Заменяет инлайн-грид. */
+.split { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; align-items: start; }
+.split--wide { grid-template-columns: 1.4fr 1fr; }
+.split--narrow { grid-template-columns: 1fr 1.3fr; }
+
+/* Обёртка таблицы: горизонтальный скролл только внутри неё, а не всей страницы. */
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ===== Нижняя навигация (мобильная) ===== */
+.bottomnav { display: none; }
+
+/* ============================================================
+   ПЛАНШЕТ / небольшой десктоп
+   ============================================================ */
 @media (max-width: 820px) {
-  .kpis, .grid--3, .grid--2 { grid-template-columns: 1fr; }
+  .split, .split--wide, .split--narrow { grid-template-columns: 1fr; }
   .topbar__link { padding: 8px 10px; font-size: 14px; }
-  .page__head h1 { font-size: 24px; }
   .topbar__nav { overflow-x: auto; }
+}
+
+/* ============================================================
+   МОБИЛЬНЫЙ (телефоны, ≤720px) — нижняя навигация + компактный топбар
+   ============================================================ */
+@media (max-width: 720px) {
+  /* Топбар: только бренд + имя + выход. Навигация уезжает в нижнюю панель. */
+  .topbar { height: 56px; }
+  .topbar__in { height: 56px; gap: 10px; }
+  .topbar__nav { display: none; }
+  .topbar__brand img { width: 30px; height: 30px; }
+  .topbar__brandtext { font-size: 15px; }
+  .topbar__user {
+    max-width: 40vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 13px; font-weight: 700;
+  }
+  .topbar__signout { height: 38px; padding: 0 12px; }
+
+  /* Контент: меньше воздуха по бокам, снизу — место под нижнюю панель. */
+  .container { padding: 0 16px; }
+  .page { padding: 18px 0 calc(72px + env(safe-area-inset-bottom)); }
+  /* Заголовок и действия — в столбик, кнопка не налезает на заголовок. */
+  .page__head { flex-direction: column; align-items: stretch; margin-bottom: 16px; gap: 12px; }
+  .page__head h1 { font-size: 22px; }
+  .page__head > .btn { width: 100%; }
+
+  /* Сетки */
+  .kpis { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid--3, .grid--2 { grid-template-columns: 1fr; }
+  .grid--products { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid { gap: 12px; }
+
+  /* KPI и выручка компактнее */
+  .kpi { padding: 16px; }
+  .kpi b { font-size: 22px; }
+  .revenue { padding: 22px; border-radius: var(--r-lg); }
+  .revenue__value { font-size: 32px; }
+
+  /* Карточка товара */
+  .prod { padding: 12px; }
+  .prod__img { height: 120px; }
+  .prod__name { min-height: 40px; font-size: 15px; }
+  .prod__price { font-size: 20px; }
+
+  /* Промо-баннер */
+  .promo-banner { padding: 20px; border-radius: var(--r-lg); }
+  .promo-banner b { font-size: 18px; }
+  .promo-banner__icon { display: none; }
+
+  /* Таблицы прокручиваются внутри себя, не ломая ширину экрана */
+  .table { min-width: 520px; }
+
+  /* Модалка превращается в нижний лист (bottom-sheet) */
+  .modal-bg { align-items: flex-end; padding: 0; }
+  .modal {
+    max-width: 100%; border-radius: var(--r-xl) var(--r-xl) 0 0;
+    padding: 22px 18px calc(22px + env(safe-area-inset-bottom));
+    max-height: 92dvh; animation: sheetUp .28s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
+
+  /* Липкий бар суммы — над нижней навигацией */
+  .paybar {
+    position: fixed; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom));
+    padding: 12px 16px calc(12px); box-shadow: 0 -8px 24px rgba(11,27,43,.10); z-index: 45;
+  }
+  .paybar .container { padding: 0; }
+
+  /* Чат учитывает топбар + нижнюю навигацию */
+  .chat { height: calc(100dvh - 56px - 64px - env(safe-area-inset-bottom) - 40px); }
+
+  /* Карта пониже */
+  .mapbox { height: 260px; }
+
+  /* Тосты по центру снизу, над навигацией */
+  .toasts { left: 12px; right: 12px; bottom: calc(72px + env(safe-area-inset-bottom)); align-items: stretch; }
+  .toast { min-width: 0; }
+
+  /* ---- Нижняя навигация ---- */
+  .bottomnav {
+    display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: rgba(255,255,255,.92); backdrop-filter: blur(16px);
+    border-top: 1px solid var(--hairline);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  }
+  .bottomnav__item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 4px 2px; border-radius: 12px; color: var(--muted); font-weight: 600;
+    min-width: 0; -webkit-tap-highlight-color: transparent;
+    transition: color .15s ease;
+  }
+  .bottomnav__icon {
+    position: relative; font-size: 21px; line-height: 1;
+    filter: grayscale(1) opacity(.6); transition: filter .15s ease, transform .15s ease;
+  }
+  .bottomnav__label {
+    font-size: 10.5px; letter-spacing: -.01em; max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .bottomnav__item--on { color: var(--primary); }
+  .bottomnav__item--on .bottomnav__icon { filter: none; transform: translateY(-1px); }
+  .bottomnav__item:active .bottomnav__icon { transform: scale(.9); }
+  .bottomnav__badge {
+    position: absolute; top: -6px; right: -9px; min-width: 16px; height: 16px; padding: 0 4px;
+    border-radius: 8px; background: var(--accent); color: #fff; font-size: 10px; font-weight: 800;
+    display: grid; place-items: center; filter: none;
+  }
+}
+
+/* ============================================================
+   МАЛЕНЬКИЕ телефоны (≤380px) — ещё компактнее
+   ============================================================ */
+@media (max-width: 380px) {
+  .container { padding: 0 12px; }
+  .kpis { gap: 10px; }
+  .kpi b { font-size: 20px; }
+  .topbar__brandtext { display: none; }
+  .bottomnav__label { font-size: 10px; }
+  .page__head h1 { font-size: 20px; }
 }

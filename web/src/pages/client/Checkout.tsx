@@ -35,7 +35,7 @@ export function Checkout() {
   return (
     <>
       <div className="page__head"><h1>Оформление</h1></div>
-      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', alignItems: 'start' }}>
+      <div className="split">
         <div className="card card--pad-lg">
           <h3>Адрес доставки</h3>
           <div className="divider" />

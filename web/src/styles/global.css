@@ -9,6 +9,12 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Никакого случайного горизонтального скролла на мобиле. */
+  overflow-x: hidden;
+  /* iOS: не масштабировать шрифты при повороте; убрать серую вспышку по тапу. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 a { color: inherit; text-decoration: none; }
 img { display: block; max-width: 100%; }

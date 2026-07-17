@@ -43,7 +43,7 @@ export function OrderDetail() {
   return (
     <>
       <button className="muted" onClick={() => nav(-1)} style={{ marginBottom: 14 }}>← Назад</button>
-      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', alignItems: 'start' }}>
+      <div className="split">
         <div>
           <div className="card">
             <div className="row-between"><h2>{money(order.total)}</h2><StatusBadge status={order.status} /></div>

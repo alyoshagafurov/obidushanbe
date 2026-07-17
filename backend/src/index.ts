@@ -1,5 +1,5 @@
 /** Точка входа: HTTP-сервер + WebSocket (Socket.IO). */
-// build-marker: 2026-07-17 — форс полной пересборки образа (лендинг: hero-бутыль + промо-заголовок + прозрачные PNG)
+// build-marker: 2026-07-17b — форс пересборки образа (мобильная адаптивность веба: нижняя навигация, сетки, модалки)
 import 'dotenv/config';
 import { createServer } from 'http';
 import { createApp } from './app';

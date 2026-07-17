@@ -67,7 +67,7 @@ export function Warehouse() {
         </div>
       </div>
 
-      <div className="grid" style={{ gridTemplateColumns: '1fr 1.3fr', alignItems: 'start' }}>
+      <div className="split split--narrow">
         {/* Форма отчёта */}
         <div className="card card--pad-lg">
           <h3>Новый отчёт</h3>
@@ -116,6 +116,7 @@ export function Warehouse() {
               )}
               <div className="card" style={{ marginTop: 14, padding: 0, overflow: 'hidden' }}>
                 {wh.data!.reports.length === 0 ? <Empty text="Отчётов за этот день нет" icon="📦" /> : (
+                  <div className="table-wrap">
                   <table className="table">
                     <thead><tr><th>Время</th><th>Доставщик</th><th>Взял</th><th>Пустых</th><th>Тары</th><th>К сдаче</th><th></th></tr></thead>
                     <tbody>
@@ -132,6 +133,7 @@ export function Warehouse() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 )}
               </div>
             </>
