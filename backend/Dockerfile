@@ -50,4 +50,4 @@ EXPOSE 4000
 #           не зависит от истории миграций — устойчиво к рассинхрону _prisma_migrations);
 #        2) на ПУСТОЙ базе заливаем демо-данные (иначе пропускаем);
 #        3) запускаем сервер (он же раздаёт сайт).
-CMD ["sh", "-c", "npx prisma db push --skip-generate --accept-data-loss && (npx tsx prisma/seed-if-empty.ts || true) && node dist/index.js"]
+CMD ["sh", "-c", "npx prisma db push --skip-generate --accept-data-loss --force-reset && (npx tsx prisma/seed-if-empty.ts || true) && node dist/index.js"]

@@ -63,8 +63,11 @@ if (!parsed.success) {
 export const env = parsed.data;
 export const isDev = env.NODE_ENV === 'development';
 export const isProd = env.NODE_ENV === 'production';
-// Демо-режим: включён в dev ИЛИ при DEMO_MODE=true (даже в проде).
-export const isDemo = isDev || env.DEMO_MODE === 'true';
+// Демо-режим: включён в dev, при DEMO_MODE=true, ИЛИ когда SMS-провайдер = 'dev'
+// (при dev-провайдере реальное SMS не уходит, поэтому вход возможен только по
+// фиксированному коду 0000 — иначе демо на проде было бы невозможно войти).
+// Для настоящего запуска задайте реальный SMS_PROVIDER — демо-режим отключится.
+export const isDemo = isDev || env.DEMO_MODE === 'true' || env.SMS_PROVIDER === 'dev';
 
 export const corsOrigins =
   env.CORS_ORIGINS === '*' ? '*' : env.CORS_ORIGINS.split(',').map((s) => s.trim());
