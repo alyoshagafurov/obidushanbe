@@ -46,8 +46,7 @@ COPY --from=build /app ./
 COPY --from=webbuild /app/web/dist ./web/dist
 WORKDIR /app/backend
 EXPOSE 4000
-# Старт: 1) db push синхронизирует схему с БД (создаёт недостающие таблицы,
-#           не зависит от истории миграций — устойчиво к рассинхрону _prisma_migrations);
-#        2) на ПУСТОЙ базе заливаем демо-данные (иначе пропускаем);
-#        3) запускаем сервер (он же раздаёт сайт).
-CMD ["sh", "-c", "npx prisma db push --skip-generate --accept-data-loss --force-reset && (npx tsx prisma/seed-if-empty.ts || true) && node dist/index.js"]
+# Старт максимально простой и не падающий: сервер поднимается всегда.
+# Схему БД приложение готовит само (src/lib/ensureSchema.ts) уже после listen —
+# так healthcheck не зависит от миграций, а прогресс виден в /health.
+CMD ["node", "dist/index.js"]

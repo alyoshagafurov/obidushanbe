@@ -6,6 +6,7 @@ import { initRealtime } from './realtime/socket';
 import { env } from './config/env';
 import { logger } from './lib/logger';
 import { prisma } from './lib/prisma';
+import { ensureSchema } from './lib/ensureSchema';
 
 async function main() {
   const app = createApp();
@@ -16,6 +17,9 @@ async function main() {
 
   server.listen(env.PORT, () => {
     logger.info(`🚀 ОБИ ДУШАНБЕ API запущен`, { port: env.PORT, env: env.NODE_ENV });
+    // Готовим схему в фоне: сервер уже слушает, поэтому healthcheck не отвалится,
+    // а прогресс виден в /health.
+    void ensureSchema();
   });
 
   // Аккуратное завершение.

@@ -8,6 +8,7 @@ import { corsOrigins } from './config/env';
 import { uploadsRouter, UPLOADS_DIR } from './routes/uploads.routes';
 import { globalLimiter } from './middleware/rateLimit';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { bootStatus } from './lib/bootStatus';
 
 import { authRouter } from './routes/auth.routes';
 import { userRouter } from './routes/user.routes';
@@ -51,7 +52,9 @@ export function createApp() {
   app.use(globalLimiter);
 
   // Health-check (для Railway / мониторинга).
-  app.get('/health', (_req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
+  app.get('/health', (_req, res) =>
+    res.json({ ok: true, ts: new Date().toISOString(), boot: bootStatus }),
+  );
 
   // Локальное хранилище файлов (раздача загруженных картинок + приём загрузок).
   app.use('/uploads', express.static(UPLOADS_DIR));
