@@ -59,7 +59,10 @@
 /* Белый «подиум»-карточка: скрывает белый фон PNG, выглядит как премиум-витрина */
 .heroL__podium { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 360px; height: 460px; border-radius: 30px;
   background: linear-gradient(180deg, #ffffff, #f4faff); box-shadow: 0 40px 80px rgba(11,60,110,.16); border: 1px solid rgba(255,255,255,.9); z-index: 1; }
-.heroL__bottle { position: absolute; left: 50%; top: 50%; height: 420px; object-fit: contain;
+/* Базовый transform ОБЯЗАТЕЛЕН: центрирование не должно зависеть от анимации —
+   иначе при её отключении left/top 50% уводят бутыль вправо-вниз. */
+.heroL__bottle { position: absolute; left: 50%; top: 50%; height: 420px; width: auto; object-fit: contain;
+  transform: translate(-50%,-50%);
   filter: drop-shadow(0 30px 40px rgba(11,60,110,.22)); animation: floatCenter 6s ease-in-out infinite; z-index: 2; }
 @keyframes floatCenter { 0%,100% { transform: translate(-50%,-54%); } 50% { transform: translate(-50%,-46%); } }
 .heroL .fchip { z-index: 3; }
@@ -106,7 +109,9 @@
 .section--dark { background: #0b1017; color: #fff; padding: 60px 0 40px; }
 .section__head { text-align: center; margin-bottom: 52px; }
 .section__head h2 { font-size: 46px; font-weight: 800; letter-spacing: -.03em; }
-.section__head h2.light { color: #fff; }
+/* Модификатор «светлый заголовок» — работает в любой секции на тёмном фоне
+   (не только в .section__head, иначе на тёмной подложке текст сливается). */
+h2.light { color: #fff; }
 .section__head p { margin-top: 12px; font-size: 17px; }
 
 /* ===================== PRODUCTS (3D tilt) ===================== */
