@@ -46,5 +46,8 @@ COPY --from=build /app ./
 COPY --from=webbuild /app/web/dist ./web/dist
 WORKDIR /app/backend
 EXPOSE 4000
-# Накатываем миграции и запускаем сервер (он же раздаёт сайт).
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/index.js"]
+# Старт: 1) db push синхронизирует схему с БД (создаёт недостающие таблицы,
+#           не зависит от истории миграций — устойчиво к рассинхрону _prisma_migrations);
+#        2) на ПУСТОЙ базе заливаем демо-данные (иначе пропускаем);
+#        3) запускаем сервер (он же раздаёт сайт).
+CMD ["sh", "-c", "npx prisma db push --skip-generate --accept-data-loss && (npx tsx prisma/seed-if-empty.ts || true) && node dist/index.js"]
