@@ -24,13 +24,10 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
   }
 
   logger.error('Необработанная ошибка', { error: String(err), stack: (err as Error)?.stack });
-  const e = err as { name?: string; code?: string; message?: string };
   return res.status(500).json({
     error: {
-      message: isProd ? 'Внутренняя ошибка сервера' : String(e?.message ?? err),
+      message: isProd ? 'Внутренняя ошибка сервера' : String((err as Error)?.message ?? err),
       code: 'INTERNAL',
-      // ВРЕМЕННО: диагностика прод-500 (убрать после отладки).
-      debug: { name: e?.name, prismaCode: e?.code, message: String(e?.message ?? err) },
     },
   });
 }
