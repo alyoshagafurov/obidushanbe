@@ -57,7 +57,8 @@ export function createApp() {
   );
 
   // Локальное хранилище файлов (раздача загруженных картинок + приём загрузок).
-  app.use('/uploads', express.static(UPLOADS_DIR));
+  // Загруженные фото кэшируем надолго (URL уникален на файл).
+  app.use('/uploads', express.static(UPLOADS_DIR, { maxAge: '30d', immutable: true }));
   app.use('/api/uploads', uploadsRouter);
 
   // API.
@@ -80,8 +81,25 @@ export function createApp() {
   const webDist = process.env.WEB_DIST ?? path.resolve(process.cwd(), '..', 'web', 'dist');
   const webIndex = path.join(webDist, 'index.html');
   if (fs.existsSync(webIndex)) {
-    app.use(express.static(webDist));
-    app.get('*', (_req, res) => res.sendFile(webIndex));
+    app.use(
+      express.static(webDist, {
+        setHeaders(res, filePath) {
+          if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+            // Хешированные бандлы Vite (JS/CSS) — неизменяемы, кэш на год.
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          } else if (filePath.endsWith('index.html')) {
+            res.setHeader('Cache-Control', 'no-cache');
+          } else {
+            // Картинки/иконки (products/*.webp, logo и т.п.) — кэш на сутки.
+            res.setHeader('Cache-Control', 'public, max-age=86400');
+          }
+        },
+      }),
+    );
+    app.get('*', (_req, res) => {
+      res.setHeader('Cache-Control', 'no-cache');
+      res.sendFile(webIndex);
+    });
   }
 
   // Финальный 404 (для не-GET запросов или когда сайт не собран) и обработчик ошибок.

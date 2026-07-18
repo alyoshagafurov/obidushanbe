@@ -29,7 +29,7 @@ export function Catalog() {
           const qty = cart.lines[p.id]?.quantity ?? 0;
           return (
             <div className="prod" key={p.id}>
-              <div className="prod__img"><img src={productImg(p.type, p.photoUrl)} alt={p.name} /></div>
+              <div className="prod__img"><img src={productImg(p.type, p.photoUrl)} alt={p.name} loading="lazy" decoding="async" /></div>
               <div className="prod__name">{p.name}</div>
               <div className="prod__foot">
                 <span className="prod__price">{money(p.price)}</span>

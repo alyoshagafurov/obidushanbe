@@ -17,11 +17,11 @@ export function dateOnly(iso: string): string {
 export function productImg(type: string, photoUrl?: string | null): string {
   if (photoUrl) return photoUrl;
   const map: Record<string, string> = {
-    WATER_20L: '/products/water20.png',
-    WATER_05L: '/products/water05.png',
-    COOLER: '/products/cooler.png',
-    PUMP_MANUAL: '/products/pump_manual.png',
-    PUMP_ELECTRIC: '/products/pump_electric.png',
+    WATER_20L: '/products/water20.webp',
+    WATER_05L: '/products/water05.webp',
+    COOLER: '/products/cooler.webp',
+    PUMP_MANUAL: '/products/pump_manual.webp',
+    PUMP_ELECTRIC: '/products/pump_electric.webp',
   };
   return map[type] ?? '/logo.png';
 }

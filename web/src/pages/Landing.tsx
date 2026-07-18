@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { config } from '../config';
 
 const PRODUCTS = [
-  { name: 'Вода 20 л', img: '/products/water20.png', price: '18', tag: 'Хит' },
-  { name: 'Вода 0.5 л · упаковка', img: '/products/water05.png', price: '36' },
-  { name: 'Кулер напольный', img: '/products/cooler.png', price: '950' },
-  { name: 'Помпа электрическая', img: '/products/pump_electric.png', price: '120' },
-  { name: 'Помпа ручная', img: '/products/pump_manual.png', price: '45' },
+  { name: 'Вода 20 л', img: '/products/water20.webp', price: '18', tag: 'Хит' },
+  { name: 'Вода 0.5 л · упаковка', img: '/products/water05.webp', price: '36' },
+  { name: 'Кулер напольный', img: '/products/cooler.webp', price: '950' },
+  { name: 'Помпа электрическая', img: '/products/pump_electric.webp', price: '120' },
+  { name: 'Помпа ручная', img: '/products/pump_manual.webp', price: '45' },
 ];
 const MARQUEE = ['Доставка за 30 минут', 'Оплата наличными', 'Рейтинг 4.8★', 'Объём 189±0.1 л', 'Высшая категория', 'Хранение 6 месяцев', 'Чат с курьером'];
 const FEATURES = [
@@ -113,7 +113,7 @@ export function Landing() {
           <div className="heroL__stage reveal">
             <div className="heroL__ring" />
             <div className="heroL__podium" />
-            <img className="heroL__bottle" src="/products/water20.png" alt="Бутыль 20 л" />
+            <img className="heroL__bottle" src="/products/water20.webp" alt="Бутыль 20 л" fetchPriority="high" decoding="async" />
 
             <div className="fchip fchip--tl"><span className="fchip__ico">💧</span><div><b>189±0.1 л</b><small>объём бутыли</small></div></div>
             <div className="fchip fchip--tr"><span className="ava-mini">А</span><div><b>Алишер · ★ 4.9</b><small>5 мин до вас</small></div></div>
@@ -144,7 +144,7 @@ export function Landing() {
             {PRODUCTS.map((p) => (
               <div className="p3" key={p.name} onMouseMove={tilt} onMouseLeave={untilt}>
                 {p.tag && <span className="p3__tag">{p.tag}</span>}
-                <div className="p3__img"><img src={p.img} alt={p.name} /></div>
+                <div className="p3__img"><img src={p.img} alt={p.name} loading="lazy" decoding="async" /></div>
                 <div className="p3__name">{p.name}</div>
                 <div className="p3__foot"><span className="p3__price">{p.price}<i>смн</i></span><Link to="/login" className="p3__btn">+</Link></div>
               </div>
@@ -219,8 +219,8 @@ export function Landing() {
                 <div className="phone__top" />
                 <div className="phone__screen">
                   <img src="/logo.png" alt="" className="phone__logo" />
-                  <div className="phone__card"><img src="/products/water20.png" alt="" /><div><b>Вода 20 л</b><small>18 смн</small></div><span>+</span></div>
-                  <div className="phone__card"><img src="/products/cooler.png" alt="" /><div><b>Кулер</b><small>950 смн</small></div><span>+</span></div>
+                  <div className="phone__card"><img src="/products/water20.webp" alt="" loading="lazy" decoding="async" /><div><b>Вода 20 л</b><small>18 смн</small></div><span>+</span></div>
+                  <div className="phone__card"><img src="/products/cooler.webp" alt="" loading="lazy" decoding="async" /><div><b>Кулер</b><small>950 смн</small></div><span>+</span></div>
                   <div className="phone__cta">Оформить заказ</div>
                 </div>
               </div>

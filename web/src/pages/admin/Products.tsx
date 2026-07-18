@@ -55,7 +55,7 @@ export function Products() {
       <div className="grid grid--products">
         {data!.map((p) => (
           <div className="prod" key={p.id} style={{ opacity: p.isActive ? 1 : 0.5 }}>
-            <div className="prod__img"><img src={productImg(p.type, p.photoUrl)} alt="" /></div>
+            <div className="prod__img"><img src={productImg(p.type, p.photoUrl)} alt="" loading="lazy" decoding="async" /></div>
             <div className="prod__name">{p.name}</div>
             <div className="hairline-muted">{money(p.price)}</div>
             <div className="prod__foot" style={{ gap: 6 }}>
