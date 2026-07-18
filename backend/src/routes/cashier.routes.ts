@@ -9,15 +9,13 @@ import { authenticate, requireActive, requireRole } from '../middleware/auth';
 import { validate } from '../middleware/validate';
 import {
   listPayroll,
-  upsertEntry,
   createPayout,
   setRate,
   listPayouts,
 } from '../services/cashier.service';
-import { createReport, listReports, deleteReport } from '../services/warehouse.service';
+import { createReport, listReports, listCourierReports, deleteReport } from '../services/warehouse.service';
 import {
   cashierDateQuery,
-  cashierEntrySchema,
   cashierPayoutSchema,
   cashierRateSchema,
   warehouseReportSchema,
@@ -32,16 +30,6 @@ cashierRouter.get(
   validate({ query: cashierDateQuery }),
   asyncHandler(async (req, res) => {
     res.json(await listPayroll(req.query.date as string | undefined));
-  }),
-);
-
-// POST /cashier/entries — вписать бутыли за день для доставщика
-cashierRouter.post(
-  '/entries',
-  validate({ body: cashierEntrySchema }),
-  asyncHandler(async (req, res) => {
-    const { courierId, bottles, date } = req.body;
-    res.json(await upsertEntry(req.user!.id, courierId, bottles, date));
   }),
 );
 
@@ -89,6 +77,14 @@ cashierRouter.post(
   validate({ body: warehouseReportSchema }),
   asyncHandler(async (req, res) => {
     res.json(await createReport(req.user!.id, req.body));
+  }),
+);
+
+// GET /cashier/warehouse/courier/:courierId — все отчёты доставщика (раскрытие «Копилки»)
+cashierRouter.get(
+  '/warehouse/courier/:courierId',
+  asyncHandler(async (req, res) => {
+    res.json(await listCourierReports(req.params.courierId));
   }),
 );
 

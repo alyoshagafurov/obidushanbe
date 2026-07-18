@@ -194,10 +194,10 @@ export interface CourierPayrollRow {
   courierName: string;
   /** Ставка за одну бутыль 20л (сомони). */
   rate: number;
-  /** Бутылей за выбранный день — введено кассиром вручную. */
-  bottlesToday: number;
-  /** Сумма за день = bottlesToday * rate. */
-  amountToday: number;
+  /** Доставлено 20л за выбранный день (из отчётов склада). */
+  deliveredToday: number;
+  /** Заработано за день = сумма зарплат по отчётам за день. */
+  earnedToday: number;
   /** Подсказка: сколько 20л доставлено по приложению за день (для сверки). */
   appBottlesToday: number;
   /** «Копилка»: всего заработано минус выплачено. */
@@ -206,7 +206,6 @@ export interface CourierPayrollRow {
   totalEarned: number;
   /** Выплачено всего. */
   totalPaid: number;
-  hasEntryToday: boolean;
 }
 
 export interface PayoutDto {
@@ -222,6 +221,22 @@ export interface PayoutDto {
  * доставщику: сколько полных бутылей взял со склада и сколько пустых вернул.
  * Остальное считается автоматически.
  */
+/** Строка прочего товара в отчёте (кулер / вода 0.5л / помпа). Не входит в зарплату. */
+export interface WarehouseItemDto {
+  id?: string;
+  productId: string | null;
+  name: string;
+  price: number;
+  /** Взял со склада. */
+  taken: number;
+  /** Вернул (непроданный остаток). */
+  returned: number;
+  /** Продано = taken − returned. */
+  sold: number;
+  /** Выручка = sold × price. */
+  revenue: number;
+}
+
 export interface WarehouseReportDto {
   id: string;
   courierId: string;
@@ -234,7 +249,9 @@ export interface WarehouseReportDto {
   fullReturned: number;
   waterPrice: number;
   bottlePrice: number;
-  /** Продано воды (полных бутылей клиентам) = fullTaken − fullReturned. */
+  /** Ставка за 20л на момент отчёта (снимок). */
+  bottleRate: number;
+  /** Доставлено воды (полных бутылей клиентам) = fullTaken − fullReturned. */
   fullSold: number;
   /** Продано новых бутылей (без обмена) = fullSold − emptyReturned. */
   bottlesSold: number;
@@ -242,8 +259,14 @@ export interface WarehouseReportDto {
   waterRevenue: number;
   /** Выручка за тару (бутыли). */
   bottleRevenue: number;
-  /** Итого «к сдаче» = вода + тара. */
+  /** Выручка за прочие товары (кулеры/0.5л/помпы). */
+  itemsRevenue: number;
+  /** Итого «к сдаче» = вода + тара + прочие товары. */
   total: number;
+  /** Зарплата доставщику за этот отчёт = fullSold × bottleRate. */
+  salary: number;
+  /** Прочие товары. */
+  items: WarehouseItemDto[];
   note: string | null;
   createdAt: string;
 }
@@ -256,5 +279,34 @@ export interface WarehouseDaySummary {
   emptyReturned: number;
   fullSold: number;
   bottlesSold: number;
+  /** Деньги «к сдаче» за день. */
   total: number;
+  /** Зарплата всем за день. */
+  salaryTotal: number;
+}
+
+/**
+ * Кабинет доставщика: его собственный заработок (без приватных заметок кассира).
+ */
+export interface CourierEarningsDto {
+  courierId: string;
+  courierName: string;
+  rate: number;
+  balance: number;
+  totalEarned: number;
+  totalPaid: number;
+  /** История отчётов (последние). Заметки кассира сюда НЕ попадают. */
+  reports: CourierReportBrief[];
+}
+
+/** Краткий отчёт для истории доставщика (без заметок). */
+export interface CourierReportBrief {
+  id: string;
+  createdAt: string;
+  /** Доставлено 20л. */
+  delivered: number;
+  /** Заработано за отчёт. */
+  salary: number;
+  /** Прочие доставленные товары (название × продано). */
+  items: { name: string; sold: number }[];
 }

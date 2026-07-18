@@ -155,12 +155,6 @@ export const cashierDateQuery = z.object({
   date: z.string().optional(), // YYYY-MM-DD или ISO
 });
 
-export const cashierEntrySchema = z.object({
-  courierId: z.string().min(1),
-  bottles: z.number().int().min(0).max(100000),
-  date: z.string().optional(),
-});
-
 export const cashierPayoutSchema = z.object({
   courierId: z.string().min(1),
   amount: z.number().positive().optional(),
@@ -171,6 +165,14 @@ export const cashierRateSchema = z.object({
   rate: z.number().min(0).max(10000),
 });
 
+export const warehouseItemSchema = z.object({
+  productId: z.string().optional().nullable(),
+  name: z.string().trim().min(1).max(120),
+  price: z.number().min(0).max(100000),
+  taken: z.number().int().min(0).max(100000),
+  returned: z.number().int().min(0).max(100000).optional(),
+});
+
 export const warehouseReportSchema = z.object({
   courierId: z.string().min(1),
   fullTaken: z.number().int().min(0).max(100000),
@@ -179,6 +181,7 @@ export const warehouseReportSchema = z.object({
   waterPrice: z.number().min(0).max(100000).optional(),
   bottlePrice: z.number().min(0).max(100000).optional(),
   note: z.string().trim().max(300).optional(),
+  items: z.array(warehouseItemSchema).max(20).optional(),
 });
 
 export const uploadUrlSchema = z.object({

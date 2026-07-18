@@ -19,10 +19,15 @@ import { bootStatus } from './bootStatus';
 
 const run = promisify(exec);
 
-/** Есть ли ключевая таблица (признак накатанной схемы). */
+/**
+ * Признак АКТУАЛЬНОЙ схемы. Проверяем таблицу WarehouseReportItem — она появилась
+ * вместе с переработкой кабинета кассира (единый отчёт: деньги + зарплата). Если её
+ * нет, схема устарела: делаем db push --force-reset + пересев демо-данными по новой
+ * модели (в проде только демо-данные — терять нечего).
+ */
 async function schemaReady(): Promise<boolean> {
   const rows = await prisma.$queryRaw<{ reg: string | null }[]>`
-    SELECT to_regclass('public."SmsCode"')::text AS reg
+    SELECT to_regclass('public."WarehouseReportItem"')::text AS reg
   `;
   return Boolean(rows?.[0]?.reg);
 }

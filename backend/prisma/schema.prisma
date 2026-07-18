@@ -58,12 +58,10 @@ model User {
   reviewsReceived Review[]        @relation("ReviewCourier")
   messagesSent    ChatMessage[]   @relation("MessageSender")
   messagesReceived ChatMessage[]  @relation("MessageRecipient")
-  // Зарплата (роль кассир)
-  deliveryEntries    DeliveryEntry[] @relation("CourierDeliveryEntries")
-  deliveryEntriesMade DeliveryEntry[] @relation("CashierDeliveryEntries")
+  // Зарплата (роль кассир): выплаты
   payoutsReceived    Payout[]        @relation("CourierPayouts")
   payoutsMade        Payout[]        @relation("CashierPayouts")
-  // Складские отчёты (обмен тары)
+  // Складские отчёты (обмен тары) — единый источник для денег «к сдаче» И зарплаты
   warehouseAsCourier WarehouseReport[] @relation("CourierWarehouse")
   warehouseAsCashier WarehouseReport[] @relation("CashierWarehouse")
 
@@ -218,24 +216,6 @@ model SmsCode {
 
 // Запись кассира: сколько бутылей 20л доставил доставщик за конкретный день.
 // Вводится вручную кассиром вечером. amount = bottles20 * rate (снимок ставки).
-model DeliveryEntry {
-  id        String   @id @default(cuid())
-  courierId String
-  courier   User     @relation("CourierDeliveryEntries", fields: [courierId], references: [id])
-  date      DateTime // нормализуется к началу дня (00:00)
-  bottles20 Int
-  rate      Decimal  @db.Decimal(10, 2)
-  amount    Decimal  @db.Decimal(10, 2)
-  cashierId String
-  cashier   User     @relation("CashierDeliveryEntries", fields: [cashierId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([courierId, date])
-  @@index([date])
-  @@index([courierId])
-}
-
 // Выплата доставщику (обнуляет/уменьшает «копилку»).
 model Payout {
   id        String   @id @default(cuid())
@@ -251,8 +231,11 @@ model Payout {
 }
 
 // Складской отчёт кассира: обмен тары по доставщику (2–3 раза в день).
-// fullTaken — взял полных со склада; emptyReturned — принёс пустых;
-// fullReturned — вернул полных (непроданный остаток). Деньги считаются на лету.
+// ЕДИНЫЙ источник и для денег «к сдаче», и для зарплаты доставщика.
+// fullTaken — взял полных 20л со склада; emptyReturned — принёс пустых;
+// fullReturned — вернул полных (непроданный остаток).
+// Доставлено 20л = fullTaken − fullReturned; зарплата = доставлено × bottleRate (снимок).
+// items — прочие товары (кулер/0.5л/помпа): идут в деньги, но НЕ в зарплату.
 model WarehouseReport {
   id            String   @id @default(cuid())
   courierId     String
@@ -264,11 +247,31 @@ model WarehouseReport {
   fullReturned  Int      @default(0)
   waterPrice    Decimal  @db.Decimal(10, 2)
   bottlePrice   Decimal  @db.Decimal(10, 2)
+  // Снимок ставки за 20л и посчитанная зарплата на момент отчёта.
+  bottleRate    Decimal  @db.Decimal(10, 2) @default(0)
+  salary        Decimal  @db.Decimal(10, 2) @default(0)
   note          String?
   createdAt     DateTime @default(now())
 
+  items         WarehouseReportItem[]
+
   @@index([courierId])
   @@index([createdAt])
+}
+
+// Строка прочего товара в складском отчёте (кулер, вода 0.5л, помпа и т.п.).
+// Продано = taken − returned; выручка = продано × price. В зарплату НЕ входит.
+model WarehouseReportItem {
+  id        String          @id @default(cuid())
+  reportId  String
+  report    WarehouseReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  productId String?
+  name      String
+  price     Decimal         @db.Decimal(10, 2)
+  taken     Int
+  returned  Int             @default(0)
+
+  @@index([reportId])
 }
 
 // Журнал подозрительных действий (множественные неудачные входы и т.п.).

@@ -16,14 +16,14 @@ const NAV: Record<string, NavItem[]> = {
     { to: '/app', label: 'Новые', icon: '📋' },
     { to: '/app/mine', label: 'Мои', icon: '🚚' },
     { to: '/app/map', label: 'Карта', icon: '🗺️' },
+    { to: '/app/earnings', label: 'Заработок', icon: '💰' },
   ],
   OPERATOR: [
     { to: '/app', label: 'Новый', icon: '➕' },
     { to: '/app/orders', label: 'Заказы', icon: '📦' },
   ],
   CASHIER: [
-    { to: '/app', label: 'За день', icon: '📅' },
-    { to: '/app/warehouse', label: 'Склад', icon: '📦' },
+    { to: '/app', label: 'Отчёт', icon: '📝' },
     { to: '/app/balances', label: 'Копилка', icon: '💰' },
     { to: '/app/rates', label: 'Ставки', icon: '⚙️' },
   ],

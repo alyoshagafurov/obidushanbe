@@ -1,6 +1,7 @@
 /** Все обращения к API в одном месте (тот же бэкенд, что и у приложения). */
 import {
   AddressSnapshot,
+  CourierEarningsDto,
   CourierPayrollRow,
   CourierPublicProfile,
   ChatMessageDto,
@@ -111,8 +112,6 @@ export const getAdminReviews = () =>
 /* cashier */
 export const getPayroll = (date?: string) =>
   api.get('/cashier/payroll', { params: { date } }).then((r) => r.data as CourierPayrollRow[]);
-export const saveEntry = (input: { courierId: string; bottles: number; date?: string }) =>
-  api.post('/cashier/entries', input).then((r) => r.data as CourierPayrollRow[]);
 export const payoutCourier = (input: { courierId: string; amount?: number }) =>
   api.post('/cashier/payouts', input).then((r) => r.data as { ok: boolean; paid: number; balanceAfter: number });
 export const getPayouts = (courierId: string) =>
@@ -120,7 +119,7 @@ export const getPayouts = (courierId: string) =>
 export const setRate = (courierId: string, rate: number) =>
   api.patch(`/cashier/couriers/${courierId}/rate`, { rate }).then((r) => r.data);
 
-/* warehouse (обмен тары) */
+/* warehouse (единый отчёт: деньги + зарплата) */
 export const getWarehouse = (date?: string) =>
   api.get('/cashier/warehouse', { params: { date } }).then(
     (r) => r.data as { reports: WarehouseReportDto[]; summary: WarehouseDaySummary },
@@ -131,9 +130,17 @@ export const createWarehouseReport = (input: {
   emptyReturned: number;
   fullReturned?: number;
   note?: string;
+  items?: { productId?: string | null; name: string; price: number; taken: number; returned?: number }[];
 }) => api.post('/cashier/warehouse', input).then((r) => r.data as WarehouseReportDto);
 export const deleteWarehouseReport = (id: string) =>
   api.delete(`/cashier/warehouse/${id}`).then((r) => r.data);
+/** Все отчёты по доставщику — раскрытие «Копилки» (с заметками). */
+export const getCourierReports = (courierId: string) =>
+  api.get(`/cashier/warehouse/courier/${courierId}`).then((r) => r.data as WarehouseReportDto[]);
+
+/* courier — личный заработок */
+export const getMyEarnings = () =>
+  api.get('/couriers/earnings').then((r) => r.data as CourierEarningsDto);
 
 /* upload helper: presigned URL -> PUT file -> publicUrl */
 export async function uploadImage(file: File, kind: 'product' | 'avatar'): Promise<string> {

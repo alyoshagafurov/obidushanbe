@@ -1,18 +1,26 @@
 /**
  * Логика кабинета кассира (зарплата доставщиков).
  *
- * Кассир каждый вечер вручную вписывает, сколько бутылей 20л доставил каждый
- * доставщик. Система считает сумму (бутыли × индивидуальная ставка) и копит
- * «копилку» (всего заработано − выплачено). Рядом показывается подсказка —
- * сколько 20л доставлено по приложению (для сверки).
+ * Единый источник — складские отчёты (WarehouseReport): каждый отчёт хранит
+ * снимок ставки и посчитанную зарплату (fullSold × bottleRate). Здесь мы только
+ * агрегируем: ведомость на день, «копилка» (всего заработано − выплачено),
+ * выплаты, ставки и личный заработок доставщика.
  */
 import { Prisma } from '@prisma/client';
-import { CourierPayrollRow, OrderStatus, ProductType, UserRole } from '@obi/shared';
+import {
+  CourierEarningsDto,
+  CourierPayrollRow,
+  CourierReportBrief,
+  OrderStatus,
+  ProductType,
+  UserRole,
+} from '@obi/shared';
 import { prisma } from '../lib/prisma';
 import { BadRequest, NotFound } from '../lib/errors';
 
 const dec = (d: Prisma.Decimal | number | null | undefined): number =>
   d == null ? 0 : typeof d === 'number' ? d : Number(d);
+const round2 = (n: number): number => Math.round(n * 100) / 100;
 
 /** Нормализуем дату (YYYY-MM-DD или ISO) к UTC-полуночи — это ключ дня. */
 export function normalizeDay(dateStr?: string): Date {
@@ -37,22 +45,33 @@ export async function listPayroll(dateStr?: string): Promise<CourierPayrollRow[]
     orderBy: { createdAt: 'asc' },
   });
 
-  // Заработано/выплачено за всё время (по доставщикам).
-  const [earnedBy, paidBy, todayEntries, deliveredToday] = await Promise.all([
-    prisma.deliveryEntry.groupBy({ by: ['courierId'], _sum: { amount: true } }),
+  const [earnedBy, paidBy, todayReports, deliveredToday] = await Promise.all([
+    // Заработано всего = сумма зарплат по всем отчётам.
+    prisma.warehouseReport.groupBy({ by: ['courierId'], _sum: { salary: true } }),
     prisma.payout.groupBy({ by: ['courierId'], _sum: { amount: true } }),
-    prisma.deliveryEntry.findMany({ where: { date: day } }),
+    // Отчёты за выбранный день (для «доставлено/заработано за день»).
+    prisma.warehouseReport.findMany({
+      where: { createdAt: range },
+      select: { courierId: true, fullTaken: true, fullReturned: true, salary: true },
+    }),
+    // Подсказка: сколько 20л доставлено по приложению за день.
     prisma.order.findMany({
       where: { status: OrderStatus.DELIVERED, deliveredAt: range, courierId: { not: null } },
       include: { items: { include: { product: true } } },
     }),
   ]);
 
-  const earnedMap = new Map(earnedBy.map((e) => [e.courierId, dec(e._sum.amount)]));
+  const earnedMap = new Map(earnedBy.map((e) => [e.courierId, dec(e._sum.salary)]));
   const paidMap = new Map(paidBy.map((p) => [p.courierId, dec(p._sum.amount)]));
-  const entryMap = new Map(todayEntries.map((e) => [e.courierId, e]));
 
-  // Подсказка: сколько 20л доставлено по приложению за день (по доставщикам).
+  const deliveredMap = new Map<string, number>();
+  const earnedTodayMap = new Map<string, number>();
+  for (const r of todayReports) {
+    const delivered = Math.max(0, r.fullTaken - r.fullReturned);
+    deliveredMap.set(r.courierId, (deliveredMap.get(r.courierId) ?? 0) + delivered);
+    earnedTodayMap.set(r.courierId, (earnedTodayMap.get(r.courierId) ?? 0) + dec(r.salary));
+  }
+
   const appBottlesMap = new Map<string, number>();
   for (const order of deliveredToday) {
     if (!order.courierId) continue;
@@ -64,51 +83,20 @@ export async function listPayroll(dateStr?: string): Promise<CourierPayrollRow[]
 
   return couriers.map((c) => {
     const rate = dec(c.courierProfile?.bottleRate ?? 1.6);
-    const entry = entryMap.get(c.id);
-    const bottlesToday = entry?.bottles20 ?? 0;
-    const amountToday = entry ? dec(entry.amount) : 0;
     const totalEarned = earnedMap.get(c.id) ?? 0;
     const totalPaid = paidMap.get(c.id) ?? 0;
     return {
       courierId: c.id,
       courierName: c.name ?? 'Доставщик',
       rate,
-      bottlesToday,
-      amountToday,
+      deliveredToday: deliveredMap.get(c.id) ?? 0,
+      earnedToday: round2(earnedTodayMap.get(c.id) ?? 0),
       appBottlesToday: appBottlesMap.get(c.id) ?? 0,
-      balance: Math.round((totalEarned - totalPaid) * 100) / 100,
-      totalEarned: Math.round(totalEarned * 100) / 100,
-      totalPaid: Math.round(totalPaid * 100) / 100,
-      hasEntryToday: !!entry,
+      balance: round2(totalEarned - totalPaid),
+      totalEarned: round2(totalEarned),
+      totalPaid: round2(totalPaid),
     };
   });
-}
-
-/** Ввод/обновление количества бутылей за день для доставщика. */
-export async function upsertEntry(
-  cashierId: string,
-  courierId: string,
-  bottles: number,
-  dateStr?: string,
-): Promise<CourierPayrollRow[]> {
-  if (bottles < 0) throw BadRequest('Количество не может быть отрицательным');
-  const courier = await prisma.user.findFirst({
-    where: { id: courierId, role: UserRole.COURIER },
-    include: { courierProfile: true },
-  });
-  if (!courier) throw NotFound('Доставщик не найден');
-
-  const day = normalizeDay(dateStr);
-  const rate = courier.courierProfile?.bottleRate ?? new Prisma.Decimal(1.6);
-  const amount = rate.mul(bottles);
-
-  await prisma.deliveryEntry.upsert({
-    where: { courierId_date: { courierId, date: day } },
-    create: { courierId, date: day, bottles20: bottles, rate, amount, cashierId },
-    update: { bottles20: bottles, rate, amount, cashierId },
-  });
-
-  return listPayroll(dateStr);
 }
 
 /** Зафиксировать выплату доставщику (уменьшает «копилку»). */
@@ -117,23 +105,22 @@ export async function createPayout(cashierId: string, courierId: string, amount?
   if (!courier) throw NotFound('Доставщик не найден');
 
   const [earned, paid] = await Promise.all([
-    prisma.deliveryEntry.aggregate({ where: { courierId }, _sum: { amount: true } }),
+    prisma.warehouseReport.aggregate({ where: { courierId }, _sum: { salary: true } }),
     prisma.payout.aggregate({ where: { courierId }, _sum: { amount: true } }),
   ]);
-  const balance = dec(earned._sum.amount) - dec(paid._sum.amount);
+  const balance = dec(earned._sum.salary) - dec(paid._sum.amount);
 
-  // По умолчанию выплачиваем всю копилку.
   const payAmount = amount != null ? amount : balance;
   if (payAmount <= 0) throw BadRequest('Нечего выплачивать');
   if (payAmount > balance + 0.001) throw BadRequest('Сумма больше копилки');
 
   await prisma.payout.create({
-    data: { courierId, cashierId, amount: new Prisma.Decimal(payAmount), note: note ?? null },
+    data: { courierId, cashierId, amount: new Prisma.Decimal(payAmount), note: note?.trim() || null },
   });
-  return { ok: true, paid: Math.round(payAmount * 100) / 100, balanceAfter: Math.round((balance - payAmount) * 100) / 100 };
+  return { ok: true, paid: round2(payAmount), balanceAfter: round2(balance - payAmount) };
 }
 
-/** Установить индивидуальную ставку за бутыль (не меняет прошлые записи — там снимок). */
+/** Установить индивидуальную ставку за бутыль (прошлые отчёты не меняются — там снимок). */
 export async function setRate(courierId: string, rate: number) {
   if (rate < 0) throw BadRequest('Ставка не может быть отрицательной');
   const courier = await prisma.user.findFirst({ where: { id: courierId, role: UserRole.COURIER } });
@@ -160,4 +147,49 @@ export async function listPayouts(courierId: string) {
     note: p.note,
     createdAt: p.createdAt.toISOString(),
   }));
+}
+
+/**
+ * Личный заработок доставщика (его собственный кабинет) — БЕЗ заметок кассира.
+ */
+export async function courierEarnings(courierId: string): Promise<CourierEarningsDto> {
+  const courier = await prisma.user.findFirst({
+    where: { id: courierId, role: UserRole.COURIER },
+    include: { courierProfile: true },
+  });
+  if (!courier) throw NotFound('Доставщик не найден');
+
+  const [reports, earned, paid] = await Promise.all([
+    prisma.warehouseReport.findMany({
+      where: { courierId },
+      include: { items: true },
+      orderBy: { createdAt: 'desc' },
+      take: 120,
+    }),
+    prisma.warehouseReport.aggregate({ where: { courierId }, _sum: { salary: true } }),
+    prisma.payout.aggregate({ where: { courierId }, _sum: { amount: true } }),
+  ]);
+
+  const totalEarned = dec(earned._sum.salary);
+  const totalPaid = dec(paid._sum.amount);
+
+  const brief: CourierReportBrief[] = reports.map((r) => ({
+    id: r.id,
+    createdAt: r.createdAt.toISOString(),
+    delivered: Math.max(0, r.fullTaken - r.fullReturned),
+    salary: dec(r.salary),
+    items: r.items
+      .map((it) => ({ name: it.name, sold: Math.max(0, it.taken - it.returned) }))
+      .filter((it) => it.sold > 0),
+  }));
+
+  return {
+    courierId: courier.id,
+    courierName: courier.name ?? 'Доставщик',
+    rate: dec(courier.courierProfile?.bottleRate ?? 1.6),
+    balance: round2(totalEarned - totalPaid),
+    totalEarned: round2(totalEarned),
+    totalPaid: round2(totalPaid),
+    reports: brief,
+  };
 }

@@ -148,24 +148,45 @@ async function main() {
     }
   }
 
-  // ---- Записи кассира (DeliveryEntry) по дням из фактических доставок ----
-  console.log('   записи кассира и выплаты...');
+  // ---- Складские отчёты кассира (ЕДИНЫЙ источник: деньги «к сдаче» + зарплата) ----
+  console.log('   складские отчёты кассира и выплаты...');
   const rateByCourier = new Map(couriers.map((c) => [c.id, courierDefs.find((d) => d.phone === c.phone)!.rate]));
+  const WATER = 15, BOTTLE = 50;
+  const otherProducts = products.slice(1); // всё, кроме 20л
+  const NOTES = ['1 бутыль с дыркой — вода вылилась', 'Клиент не открыл — вернул полную', 'Всё чисто', 'Задержался — пробки'];
+  const earnedByCourier = new Map<string, number>();
   for (const [key, bottles] of deliveredByCourierDay) {
     const [courierId, dateIso] = key.split('|');
-    const rate = new Prisma.Decimal(rateByCourier.get(courierId) ?? '1.60');
-    await prisma.deliveryEntry.upsert({
-      where: { courierId_date: { courierId, date: new Date(dateIso) } },
-      update: { bottles20: bottles, rate, amount: rate.mul(bottles), cashierId: cashier.id },
-      create: { courierId, date: new Date(dateIso), bottles20: bottles, rate, amount: rate.mul(bottles), cashierId: cashier.id },
+    if (bottles <= 0) continue;
+    const rateStr = rateByCourier.get(courierId) ?? '1.60';
+    const rateNum = Number(rateStr);
+    const fullReturned = Math.random() < 0.25 ? rnd(1, 3) : 0; // часть вернул полными
+    const fullTaken = bottles + fullReturned;
+    const barrelSold = Math.random() < 0.4 ? rnd(1, 2) : 0; // продано с бочкой (без обмена)
+    const emptyReturned = Math.max(0, bottles - barrelSold);
+    const salary = Math.round(bottles * rateNum * 100) / 100;
+    earnedByCourier.set(courierId, (earnedByCourier.get(courierId) ?? 0) + salary);
+    const createdAt = new Date(dateIso); createdAt.setUTCHours(rnd(10, 18), rnd(0, 59));
+    const withItem = Math.random() < 0.15 && otherProducts.length > 0 ? pick(otherProducts) : null;
+    await prisma.warehouseReport.create({
+      data: {
+        courierId, cashierId: cashier.id,
+        fullTaken, emptyReturned, fullReturned,
+        waterPrice: new Prisma.Decimal(WATER), bottlePrice: new Prisma.Decimal(BOTTLE),
+        bottleRate: new Prisma.Decimal(rateStr), salary: new Prisma.Decimal(salary),
+        note: Math.random() < 0.12 ? pick(NOTES) : null,
+        createdAt,
+        items: withItem
+          ? { create: [{ productId: withItem.id, name: withItem.name, price: withItem.price, taken: rnd(1, 3), returned: 0 }] }
+          : undefined,
+      },
     });
   }
 
-  // Выплаты: у каждого курьера пара выплат за прошлые недели (копилка частично выдана)
+  // Выплаты: у каждого курьера часть копилки уже выдана (~45–70%)
   for (const c of couriers) {
-    const agg = await prisma.deliveryEntry.aggregate({ where: { courierId: c.id }, _sum: { amount: true } });
-    const earned = Number(agg._sum.amount ?? 0);
-    const payout = Math.round(earned * (0.45 + Math.random() * 0.25)); // выдано ~45-70%
+    const earned = earnedByCourier.get(c.id) ?? 0;
+    const payout = Math.round(earned * (0.45 + Math.random() * 0.25));
     if (payout > 0) {
       await prisma.payout.create({ data: { courierId: c.id, cashierId: cashier.id, amount: new Prisma.Decimal(payout), note: 'Зарплата за неделю', createdAt: new Date(Date.now() - rnd(3, 12) * 864e5) } });
     }
