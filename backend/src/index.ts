@@ -1,5 +1,5 @@
 /** Точка входа: HTTP-сервер + WebSocket (Socket.IO). */
-// build-marker: 2026-07-17b — форс пересборки образа (мобильная адаптивность веба: нижняя навигация, сетки, модалки)
+// build-marker: 2026-07-18 — фикс лендинга: фото товаров не вылезают из карточек + подиум hero на мобиле
 import 'dotenv/config';
 import { createServer } from 'http';
 import { createApp } from './app';
