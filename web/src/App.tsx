@@ -27,6 +27,7 @@ import { NewOrder } from './pages/operator/NewOrder';
 import { OperatorOrders } from './pages/operator/OperatorOrders';
 
 import { Report } from './pages/cashier/Report';
+import { DaySummary } from './pages/cashier/DaySummary';
 import { Balances } from './pages/cashier/Balances';
 import { Rates } from './pages/cashier/Rates';
 
@@ -75,6 +76,7 @@ function RoleRoutes({ role }: { role: UserRole }) {
       return (
         <Routes>
           <Route path="/" element={<Report />} />
+          <Route path="day" element={<DaySummary />} />
           <Route path="balances" element={<Balances />} />
           <Route path="rates" element={<Rates />} />
           <Route path="*" element={<Navigate to="/app" replace />} />

@@ -166,11 +166,8 @@ export const cashierRateSchema = z.object({
 });
 
 export const warehouseItemSchema = z.object({
-  productId: z.string().optional().nullable(),
   name: z.string().trim().min(1).max(120),
-  price: z.number().min(0).max(100000),
-  taken: z.number().int().min(0).max(100000),
-  returned: z.number().int().min(0).max(100000).optional(),
+  amount: z.number().min(0).max(1000000),
 });
 
 export const warehouseReportSchema = z.object({

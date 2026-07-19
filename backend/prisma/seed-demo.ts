@@ -177,7 +177,7 @@ async function main() {
         note: Math.random() < 0.12 ? pick(NOTES) : null,
         createdAt,
         items: withItem
-          ? { create: [{ productId: withItem.id, name: withItem.name, price: withItem.price, taken: rnd(1, 3), returned: 0 }] }
+          ? { create: [{ name: withItem.name, amount: new Prisma.Decimal(Number(withItem.price) * rnd(1, 3)) }] }
           : undefined,
       },
     });

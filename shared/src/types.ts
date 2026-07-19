@@ -221,20 +221,12 @@ export interface PayoutDto {
  * доставщику: сколько полных бутылей взял со склада и сколько пустых вернул.
  * Остальное считается автоматически.
  */
-/** Строка прочего товара в отчёте (кулер / вода 0.5л / помпа). Не входит в зарплату. */
+/** Строка «Ещё» в отчёте — кассир пишет название и сумму вручную. Не входит в зарплату. */
 export interface WarehouseItemDto {
   id?: string;
-  productId: string | null;
   name: string;
-  price: number;
-  /** Взял со склада. */
-  taken: number;
-  /** Вернул (непроданный остаток). */
-  returned: number;
-  /** Продано = taken − returned. */
-  sold: number;
-  /** Выручка = sold × price. */
-  revenue: number;
+  /** Сумма деньгами (идёт в «к сдаче»). */
+  amount: number;
 }
 
 export interface WarehouseReportDto {
@@ -307,6 +299,6 @@ export interface CourierReportBrief {
   delivered: number;
   /** Заработано за отчёт. */
   salary: number;
-  /** Прочие доставленные товары (название × продано). */
-  items: { name: string; sold: number }[];
+  /** Прочее, что брал со склада (названия из «Ещё»). */
+  items: string[];
 }

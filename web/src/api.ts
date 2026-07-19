@@ -130,7 +130,7 @@ export const createWarehouseReport = (input: {
   emptyReturned: number;
   fullReturned?: number;
   note?: string;
-  items?: { productId?: string | null; name: string; price: number; taken: number; returned?: number }[];
+  items?: { name: string; amount: number }[];
 }) => api.post('/cashier/warehouse', input).then((r) => r.data as WarehouseReportDto);
 export const deleteWarehouseReport = (id: string) =>
   api.delete(`/cashier/warehouse/${id}`).then((r) => r.data);

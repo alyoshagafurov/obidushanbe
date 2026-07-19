@@ -40,7 +40,7 @@ export function Earnings() {
               </div>
               <div className="row" style={{ gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                 <span className="chip">Доставлено 20л: {r.delivered}</span>
-                {r.items.map((it, i) => <span key={i} className="chip">{it.name}: {it.sold}</span>)}
+                {r.items.map((name, i) => <span key={i} className="chip">{name}</span>)}
               </div>
             </div>
           ))}

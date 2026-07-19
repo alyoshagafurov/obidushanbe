@@ -178,9 +178,7 @@ export async function courierEarnings(courierId: string): Promise<CourierEarning
     createdAt: r.createdAt.toISOString(),
     delivered: Math.max(0, r.fullTaken - r.fullReturned),
     salary: dec(r.salary),
-    items: r.items
-      .map((it) => ({ name: it.name, sold: Math.max(0, it.taken - it.returned) }))
-      .filter((it) => it.sold > 0),
+    items: r.items.map((it) => it.name),
   }));
 
   return {

@@ -24,6 +24,7 @@ const NAV: Record<string, NavItem[]> = {
   ],
   CASHIER: [
     { to: '/app', label: 'Отчёт', icon: '📝' },
+    { to: '/app/day', label: 'Итоги', icon: '📊' },
     { to: '/app/balances', label: 'Копилка', icon: '💰' },
     { to: '/app/rates', label: 'Ставки', icon: '⚙️' },
   ],

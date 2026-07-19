@@ -90,7 +90,7 @@ function CourierDetail({ courierId, name, onClose }: { courierId: string; name: 
                     <div className="row" style={{ gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                       <span className="chip">Доставлено 20л: {r.fullSold}</span>
                       {r.bottlesSold > 0 && <span className="chip">С бочкой: {r.bottlesSold}</span>}
-                      {r.items.map((it) => <span key={it.id} className="chip">{it.name}: {it.sold}</span>)}
+                      {r.items.map((it) => <span key={it.id} className="chip">{it.name}: {money(it.amount)}</span>)}
                     </div>
                     {r.note && <div style={{ marginTop: 10, background: '#fff7e6', color: '#9a6a00', padding: '8px 12px', borderRadius: 10, fontSize: 13 }}>📝 {r.note}</div>}
                   </div>

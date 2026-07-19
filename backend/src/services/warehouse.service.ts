@@ -40,14 +40,11 @@ function dayRange(dateStr?: string): { start: Date; end: Date } {
 type ReportRow = Prisma.WarehouseReportGetPayload<{ include: { courier: true; items: true } }>;
 
 interface ItemInput {
-  productId?: string | null;
   name: string;
-  price: number;
-  taken: number;
-  returned?: number;
+  amount: number;
 }
 
-/** Считает производные величины отчёта (вода 20л + тара + прочие товары + зарплата). */
+/** Считает производные величины отчёта (вода 20л + тара + «Ещё» + зарплата). */
 export function computeReport(r: {
   fullTaken: number;
   emptyReturned: number;
@@ -55,16 +52,13 @@ export function computeReport(r: {
   waterPrice: number;
   bottlePrice: number;
   bottleRate: number;
-  items?: { price: number; taken: number; returned: number }[];
+  items?: { amount: number }[];
 }) {
   const fullSold = Math.max(0, r.fullTaken - r.fullReturned);
   const bottlesSold = Math.max(0, fullSold - r.emptyReturned);
   const waterRevenue = fullSold * r.waterPrice;
   const bottleRevenue = bottlesSold * r.bottlePrice;
-  const itemsRevenue = (r.items ?? []).reduce(
-    (s, it) => s + Math.max(0, it.taken - it.returned) * it.price,
-    0,
-  );
+  const itemsRevenue = (r.items ?? []).reduce((s, it) => s + it.amount, 0);
   const salary = fullSold * r.bottleRate;
   return {
     fullSold,
@@ -77,17 +71,8 @@ export function computeReport(r: {
   };
 }
 
-function itemToDto(it: {
-  id: string;
-  productId: string | null;
-  name: string;
-  price: Prisma.Decimal;
-  taken: number;
-  returned: number;
-}): WarehouseItemDto {
-  const price = dec(it.price);
-  const sold = Math.max(0, it.taken - it.returned);
-  return { id: it.id, productId: it.productId, name: it.name, price, taken: it.taken, returned: it.returned, sold, revenue: round2(sold * price) };
+function itemToDto(it: { id: string; name: string; amount: Prisma.Decimal }): WarehouseItemDto {
+  return { id: it.id, name: it.name, amount: dec(it.amount) };
 }
 
 function toDto(r: ReportRow): WarehouseReportDto {
@@ -102,7 +87,7 @@ function toDto(r: ReportRow): WarehouseReportDto {
     waterPrice,
     bottlePrice,
     bottleRate,
-    items: items.map((i) => ({ price: i.price, taken: i.taken, returned: i.returned })),
+    items: items.map((i) => ({ amount: i.amount })),
   });
   return {
     id: r.id,
@@ -146,7 +131,7 @@ export async function createReport(
 
   const bottleRate = dec(courier.courierProfile?.bottleRate ?? 1.6);
   const fullSold = Math.max(0, input.fullTaken - (input.fullReturned ?? 0));
-  const items = (input.items ?? []).filter((i) => (i.taken ?? 0) > 0 || (i.returned ?? 0) > 0);
+  const items = (input.items ?? []).filter((i) => i.name?.trim() && i.amount > 0);
 
   const report = await prisma.warehouseReport.create({
     data: {
@@ -161,13 +146,7 @@ export async function createReport(
       salary: new Prisma.Decimal(round2(fullSold * bottleRate)),
       note: input.note?.trim() || null,
       items: {
-        create: items.map((i) => ({
-          productId: i.productId ?? null,
-          name: i.name,
-          price: new Prisma.Decimal(i.price),
-          taken: i.taken,
-          returned: i.returned ?? 0,
-        })),
+        create: items.map((i) => ({ name: i.name.trim(), amount: new Prisma.Decimal(i.amount) })),
       },
     },
     include: { courier: true, items: true },

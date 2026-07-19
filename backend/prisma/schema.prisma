@@ -259,17 +259,14 @@ model WarehouseReport {
   @@index([createdAt])
 }
 
-// Строка прочего товара в складском отчёте (кулер, вода 0.5л, помпа и т.п.).
-// Продано = taken − returned; выручка = продано × price. В зарплату НЕ входит.
+// Строка «Ещё» в отчёте: кассир пишет название и сумму вручную (кулер, помпа и т.п.).
+// Сумма идёт в деньги «к сдаче», в зарплату НЕ входит.
 model WarehouseReportItem {
   id        String          @id @default(cuid())
   reportId  String
   report    WarehouseReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
-  productId String?
   name      String
-  price     Decimal         @db.Decimal(10, 2)
-  taken     Int
-  returned  Int             @default(0)
+  amount    Decimal         @db.Decimal(10, 2)
 
   @@index([reportId])
 }
