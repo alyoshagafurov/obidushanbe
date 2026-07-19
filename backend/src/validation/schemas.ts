@@ -170,13 +170,16 @@ export const warehouseItemSchema = z.object({
   amount: z.number().min(0).max(1000000),
 });
 
+export const warehouseTripSchema = z.object({
+  taken: z.number().int().min(0).max(100000),
+  emptyReturned: z.number().int().min(0).max(100000).optional(),
+  fullReturned: z.number().int().min(0).max(100000).optional(),
+});
+
 export const warehouseReportSchema = z.object({
   courierId: z.string().min(1),
-  fullTaken: z.number().int().min(0).max(100000),
-  emptyReturned: z.number().int().min(0).max(100000),
-  fullReturned: z.number().int().min(0).max(100000).optional(),
-  waterPrice: z.number().min(0).max(100000).optional(),
-  bottlePrice: z.number().min(0).max(100000).optional(),
+  date: z.string().optional(),
+  trips: z.array(warehouseTripSchema).max(12),
   note: z.string().trim().max(300).optional(),
   items: z.array(warehouseItemSchema).max(20).optional(),
 });

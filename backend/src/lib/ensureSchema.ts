@@ -20,21 +20,16 @@ import { bootStatus } from './bootStatus';
 const run = promisify(exec);
 
 /**
- * Признак АКТУАЛЬНОЙ схемы. Проверяем колонку WarehouseReportItem.amount —
- * она появилась при упрощении отчёта («Ещё»: название + сумма вручную). Если её
- * нет (старая схема или таблицы нет вовсе), делаем db push --force-reset + пересев
- * демо-данными по новой модели (в проде только демо-данные — терять нечего).
+ * Признак АКТУАЛЬНОЙ схемы. Проверяем таблицу WarehouseTrip — она появилась вместе
+ * с «листом дня» (отчёт = доставщик × день, внутри рейсы). Если её нет (старая схема
+ * или таблиц нет вовсе), делаем db push --force-reset + пересев демо-данными по новой
+ * модели (в проде только демо-данные — терять нечего).
  */
 async function schemaReady(): Promise<boolean> {
-  const rows = await prisma.$queryRaw<{ ready: boolean }[]>`
-    SELECT EXISTS (
-      SELECT 1 FROM information_schema.columns
-      WHERE table_schema = 'public'
-        AND table_name = 'WarehouseReportItem'
-        AND column_name = 'amount'
-    ) AS ready
+  const rows = await prisma.$queryRaw<{ reg: string | null }[]>`
+    SELECT to_regclass('public."WarehouseTrip"')::text AS reg
   `;
-  return Boolean(rows?.[0]?.ready);
+  return Boolean(rows?.[0]?.reg);
 }
 
 export async function ensureSchema(): Promise<void> {

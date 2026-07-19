@@ -51,8 +51,8 @@ export async function listPayroll(dateStr?: string): Promise<CourierPayrollRow[]
     prisma.payout.groupBy({ by: ['courierId'], _sum: { amount: true } }),
     // Отчёты за выбранный день (для «доставлено/заработано за день»).
     prisma.warehouseReport.findMany({
-      where: { createdAt: range },
-      select: { courierId: true, fullTaken: true, fullReturned: true, salary: true },
+      where: { date: day },
+      select: { courierId: true, salary: true, trips: { select: { taken: true, fullReturned: true } } },
     }),
     // Подсказка: сколько 20л доставлено по приложению за день.
     prisma.order.findMany({
@@ -67,7 +67,7 @@ export async function listPayroll(dateStr?: string): Promise<CourierPayrollRow[]
   const deliveredMap = new Map<string, number>();
   const earnedTodayMap = new Map<string, number>();
   for (const r of todayReports) {
-    const delivered = Math.max(0, r.fullTaken - r.fullReturned);
+    const delivered = r.trips.reduce((s, t) => s + Math.max(0, t.taken - t.fullReturned), 0);
     deliveredMap.set(r.courierId, (deliveredMap.get(r.courierId) ?? 0) + delivered);
     earnedTodayMap.set(r.courierId, (earnedTodayMap.get(r.courierId) ?? 0) + dec(r.salary));
   }
@@ -162,8 +162,8 @@ export async function courierEarnings(courierId: string): Promise<CourierEarning
   const [reports, earned, paid] = await Promise.all([
     prisma.warehouseReport.findMany({
       where: { courierId },
-      include: { items: true },
-      orderBy: { createdAt: 'desc' },
+      include: { items: true, trips: true },
+      orderBy: { date: 'desc' },
       take: 120,
     }),
     prisma.warehouseReport.aggregate({ where: { courierId }, _sum: { salary: true } }),
@@ -175,8 +175,8 @@ export async function courierEarnings(courierId: string): Promise<CourierEarning
 
   const brief: CourierReportBrief[] = reports.map((r) => ({
     id: r.id,
-    createdAt: r.createdAt.toISOString(),
-    delivered: Math.max(0, r.fullTaken - r.fullReturned),
+    createdAt: r.date.toISOString(),
+    delivered: r.trips.reduce((s, t) => s + Math.max(0, t.taken - t.fullReturned), 0),
     salary: dec(r.salary),
     items: r.items.map((it) => it.name),
   }));

@@ -1,18 +1,16 @@
 /**
- * Складской отчёт кассира — ЕДИНЫЙ источник и для денег «к сдаче», и для зарплаты.
+ * Дневной складской отчёт кассира (как строка в тетради).
+ * ОДИН отчёт на доставщика в день; внутри — рейсы (заезды на склад).
  *
- * Модель: доставщик берёт полные бутыли 20л со склада, привозит пустые/остаток обратно.
- *  - доставлено 20л  = fullTaken − fullReturned;
- *  - с обменом (сдал пустую) — платит только за воду (waterPrice);
- *  - без пустой — платит за воду + тару (waterPrice + bottlePrice).
- *  - прочие товары (кулер/0.5л/помпа) — продано = взял − вернул, деньги = продано × цена
- *    (в зарплату НЕ входят).
+ * Каждый рейс: взял (taken), принёс пустых (emptyReturned), вернул полных (fullReturned).
+ * Доставлено рейса   = взял − вернул полных;
+ * с бочкой рейса     = доставлено − пустых (клиент не вернул пустую).
+ * По дню суммируем рейсы; за воду платят все доставленные, за бочку — только «с бочкой».
  *
- * Расчёт:
- *  fullSold    = fullTaken − fullReturned              (доставлено воды 20л)
- *  bottlesSold = fullSold − emptyReturned               (новые бутыли — без обмена)
- *  total       = fullSold*water + bottlesSold*bottle + Σ(item)   (деньги «к сдаче»)
- *  salary      = fullSold * bottleRate                  (зарплата доставщику)
+ *  delivered  = Σ (taken − fullReturned)
+ *  soldBottle = Σ max(0, deliveredTrip − emptyReturned)
+ *  total      = delivered*water + soldBottle*bottle + Σ(«Ещё»)   (деньги «к сдаче»)
+ *  salary     = delivered * bottleRate                           (зарплата)
  */
 import { Prisma } from '@prisma/client';
 import {
@@ -22,6 +20,7 @@ import {
   WarehouseDaySummary,
   WarehouseItemDto,
   WarehouseReportDto,
+  WarehouseTripDto,
 } from '@obi/shared';
 import { prisma } from '../lib/prisma';
 import { BadRequest, NotFound } from '../lib/errors';
@@ -29,38 +28,46 @@ import { BadRequest, NotFound } from '../lib/errors';
 const dec = (d: Prisma.Decimal | number): number => (typeof d === 'number' ? d : Number(d));
 const round2 = (n: number): number => Math.round(n * 100) / 100;
 
-function dayRange(dateStr?: string): { start: Date; end: Date } {
+/** Нормализуем дату (YYYY-MM-DD/ISO) к UTC-полуночи — ключ дня. */
+function normalizeDay(dateStr?: string): Date {
   const base = dateStr ? new Date(dateStr) : new Date();
-  const start = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate()));
-  const end = new Date(start);
-  end.setUTCDate(end.getUTCDate() + 1);
-  return { start, end };
+  return new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth(), base.getUTCDate()));
 }
 
-type ReportRow = Prisma.WarehouseReportGetPayload<{ include: { courier: true; items: true } }>;
+type ReportRow = Prisma.WarehouseReportGetPayload<{ include: { courier: true; trips: true; items: true } }>;
 
+interface TripInput {
+  taken: number;
+  emptyReturned?: number;
+  fullReturned?: number;
+}
 interface ItemInput {
   name: string;
   amount: number;
 }
 
-/** Считает производные величины отчёта (вода 20л + тара + «Ещё» + зарплата). */
-export function computeReport(r: {
-  fullTaken: number;
-  emptyReturned: number;
-  fullReturned: number;
-  waterPrice: number;
-  bottlePrice: number;
-  bottleRate: number;
-  items?: { amount: number }[];
-}) {
-  const fullSold = Math.max(0, r.fullTaken - r.fullReturned);
-  const bottlesSold = Math.max(0, fullSold - r.emptyReturned);
-  const waterRevenue = fullSold * r.waterPrice;
-  const bottleRevenue = bottlesSold * r.bottlePrice;
-  const itemsRevenue = (r.items ?? []).reduce((s, it) => s + it.amount, 0);
-  const salary = fullSold * r.bottleRate;
+/** Производные величины по рейсам + «Ещё». */
+export function computeReport(
+  trips: { taken: number; emptyReturned: number; fullReturned: number }[],
+  opts: { waterPrice: number; bottlePrice: number; bottleRate: number; items?: { amount: number }[] },
+) {
+  let fullTaken = 0, emptyReturned = 0, fullReturned = 0, fullSold = 0, bottlesSold = 0;
+  for (const t of trips) {
+    const deliveredTrip = Math.max(0, t.taken - t.fullReturned);
+    fullTaken += t.taken;
+    emptyReturned += t.emptyReturned;
+    fullReturned += t.fullReturned;
+    fullSold += deliveredTrip;
+    bottlesSold += Math.max(0, deliveredTrip - t.emptyReturned);
+  }
+  const itemsRevenue = (opts.items ?? []).reduce((s, it) => s + it.amount, 0);
+  const waterRevenue = fullSold * opts.waterPrice;
+  const bottleRevenue = bottlesSold * opts.bottlePrice;
+  const salary = fullSold * opts.bottleRate;
   return {
+    fullTaken,
+    emptyReturned,
+    fullReturned,
     fullSold,
     bottlesSold,
     waterRevenue: round2(waterRevenue),
@@ -79,23 +86,17 @@ function toDto(r: ReportRow): WarehouseReportDto {
   const waterPrice = dec(r.waterPrice);
   const bottlePrice = dec(r.bottlePrice);
   const bottleRate = dec(r.bottleRate);
+  const trips: WarehouseTripDto[] = [...r.trips]
+    .sort((a, b) => a.seq - b.seq)
+    .map((t) => ({ taken: t.taken, emptyReturned: t.emptyReturned, fullReturned: t.fullReturned }));
   const items = (r.items ?? []).map(itemToDto);
-  const c = computeReport({
-    fullTaken: r.fullTaken,
-    emptyReturned: r.emptyReturned,
-    fullReturned: r.fullReturned,
-    waterPrice,
-    bottlePrice,
-    bottleRate,
-    items: items.map((i) => ({ amount: i.amount })),
-  });
+  const c = computeReport(trips, { waterPrice, bottlePrice, bottleRate, items: items.map((i) => ({ amount: i.amount })) });
   return {
     id: r.id,
     courierId: r.courierId,
     courierName: r.courier?.name ?? 'Доставщик',
-    fullTaken: r.fullTaken,
-    emptyReturned: r.emptyReturned,
-    fullReturned: r.fullReturned,
+    date: r.date.toISOString().slice(0, 10),
+    trips,
     waterPrice,
     bottlePrice,
     bottleRate,
@@ -106,52 +107,67 @@ function toDto(r: ReportRow): WarehouseReportDto {
   };
 }
 
-/** Создать отчёт по доставщику (20л обмен + прочие товары). */
-export async function createReport(
+/**
+ * Сохранить дневной отчёт доставщика (upsert по courierId+день).
+ * Полностью заменяет рейсы и «Ещё» переданными.
+ */
+export async function saveReport(
   cashierId: string,
   input: {
     courierId: string;
-    fullTaken: number;
-    emptyReturned: number;
-    fullReturned?: number;
-    waterPrice?: number;
-    bottlePrice?: number;
+    date?: string;
+    trips: TripInput[];
     note?: string;
     items?: ItemInput[];
   },
 ): Promise<WarehouseReportDto> {
-  if (input.fullTaken < 0 || input.emptyReturned < 0 || (input.fullReturned ?? 0) < 0) {
-    throw BadRequest('Отрицательные значения недопустимы');
-  }
   const courier = await prisma.user.findFirst({
     where: { id: input.courierId, role: UserRole.COURIER },
     include: { courierProfile: true },
   });
   if (!courier) throw NotFound('Доставщик не найден');
 
+  const day = normalizeDay(input.date);
   const bottleRate = dec(courier.courierProfile?.bottleRate ?? 1.6);
-  const fullSold = Math.max(0, input.fullTaken - (input.fullReturned ?? 0));
-  const items = (input.items ?? []).filter((i) => i.name?.trim() && i.amount > 0);
 
-  const report = await prisma.warehouseReport.create({
-    data: {
-      courierId: input.courierId,
-      cashierId,
-      fullTaken: input.fullTaken,
-      emptyReturned: input.emptyReturned,
-      fullReturned: input.fullReturned ?? 0,
-      waterPrice: new Prisma.Decimal(input.waterPrice ?? WATER_PRICE),
-      bottlePrice: new Prisma.Decimal(input.bottlePrice ?? BOTTLE_PRICE),
-      bottleRate: new Prisma.Decimal(bottleRate),
-      salary: new Prisma.Decimal(round2(fullSold * bottleRate)),
-      note: input.note?.trim() || null,
-      items: {
-        create: items.map((i) => ({ name: i.name.trim(), amount: new Prisma.Decimal(i.amount) })),
-      },
-    },
-    include: { courier: true, items: true },
+  const trips = (input.trips ?? [])
+    .map((t) => ({
+      taken: Math.max(0, Math.trunc(t.taken || 0)),
+      emptyReturned: Math.max(0, Math.trunc(t.emptyReturned ?? 0)),
+      fullReturned: Math.max(0, Math.trunc(t.fullReturned ?? 0)),
+    }))
+    .filter((t) => t.taken > 0 || t.emptyReturned > 0 || t.fullReturned > 0);
+
+  const items = (input.items ?? []).filter((i) => i.name?.trim() && i.amount > 0);
+  const c = computeReport(trips, { waterPrice: WATER_PRICE, bottlePrice: BOTTLE_PRICE, bottleRate });
+
+  const data = {
+    cashierId,
+    waterPrice: new Prisma.Decimal(WATER_PRICE),
+    bottlePrice: new Prisma.Decimal(BOTTLE_PRICE),
+    bottleRate: new Prisma.Decimal(bottleRate),
+    salary: new Prisma.Decimal(c.salary),
+    note: input.note?.trim() || null,
+    trips: { create: trips.map((t, i) => ({ seq: i + 1, taken: t.taken, emptyReturned: t.emptyReturned, fullReturned: t.fullReturned })) },
+    items: { create: items.map((i) => ({ name: i.name.trim(), amount: new Prisma.Decimal(i.amount) })) },
+  };
+
+  const existing = await prisma.warehouseReport.findUnique({ where: { courierId_date: { courierId: input.courierId, date: day } } });
+  if (existing) {
+    await prisma.$transaction([
+      prisma.warehouseTrip.deleteMany({ where: { reportId: existing.id } }),
+      prisma.warehouseReportItem.deleteMany({ where: { reportId: existing.id } }),
+      prisma.warehouseReport.update({ where: { id: existing.id }, data }),
+    ]);
+  } else {
+    await prisma.warehouseReport.create({ data: { courierId: input.courierId, date: day, ...data } });
+  }
+
+  const saved = await prisma.warehouseReport.findUnique({
+    where: { courierId_date: { courierId: input.courierId, date: day } },
+    include: { courier: true, trips: true, items: true },
   });
-  return toDto(report);
+  return toDto(saved!);
 }
 
 /** Отчёты за день + итоги. */
@@ -159,15 +175,15 @@ export async function listReports(dateStr?: string): Promise<{
   reports: WarehouseReportDto[];
   summary: WarehouseDaySummary;
 }> {
-  const { start, end } = dayRange(dateStr);
+  const day = normalizeDay(dateStr);
   const rows = await prisma.warehouseReport.findMany({
-    where: { createdAt: { gte: start, lt: end } },
-    include: { courier: true, items: true },
-    orderBy: { createdAt: 'desc' },
+    where: { date: day },
+    include: { courier: true, trips: true, items: true },
+    orderBy: { createdAt: 'asc' },
   });
   const reports = rows.map(toDto);
   const summary: WarehouseDaySummary = {
-    date: start.toISOString().slice(0, 10),
+    date: day.toISOString().slice(0, 10),
     reportsCount: reports.length,
     fullTaken: reports.reduce((s, r) => s + r.fullTaken, 0),
     emptyReturned: reports.reduce((s, r) => s + r.emptyReturned, 0),
@@ -183,14 +199,14 @@ export async function listReports(dateStr?: string): Promise<{
 export async function listCourierReports(courierId: string, limit = 200): Promise<WarehouseReportDto[]> {
   const rows = await prisma.warehouseReport.findMany({
     where: { courierId },
-    include: { courier: true, items: true },
-    orderBy: { createdAt: 'desc' },
+    include: { courier: true, trips: true, items: true },
+    orderBy: { date: 'desc' },
     take: limit,
   });
   return rows.map(toDto);
 }
 
-/** Удалить отчёт (исправление ошибки ввода). Позиции удалятся каскадом. */
+/** Удалить дневной отчёт (рейсы и «Ещё» удалятся каскадом). */
 export async function deleteReport(id: string): Promise<void> {
   await prisma.warehouseReport.deleteMany({ where: { id } });
 }

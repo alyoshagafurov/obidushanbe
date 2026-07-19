@@ -160,22 +160,31 @@ async function main() {
     if (bottles <= 0) continue;
     const rateStr = rateByCourier.get(courierId) ?? '1.60';
     const rateNum = Number(rateStr);
-    const fullReturned = Math.random() < 0.25 ? rnd(1, 3) : 0; // часть вернул полными
-    const fullTaken = bottles + fullReturned;
-    const barrelSold = Math.random() < 0.4 ? rnd(1, 2) : 0; // продано с бочкой (без обмена)
-    const emptyReturned = Math.max(0, bottles - barrelSold);
-    const salary = Math.round(bottles * rateNum * 100) / 100;
+    // День = 2 рейса: делим доставленное между утром и после обеда.
+    const d1 = Math.max(1, Math.round(bottles * (0.4 + Math.random() * 0.3)));
+    const d2 = Math.max(0, bottles - d1);
+    const makeTrip = (delivered: number) => {
+      if (delivered <= 0) return null;
+      const fullReturned = Math.random() < 0.2 ? rnd(1, 2) : 0;
+      const barrelSold = Math.random() < 0.35 ? rnd(1, 2) : 0;
+      return { seq: 0, taken: delivered + fullReturned, emptyReturned: Math.max(0, delivered - barrelSold), fullReturned };
+    };
+    const trips = [makeTrip(d1), makeTrip(d2)].filter(Boolean).map((t, i) => ({ ...t!, seq: i + 1 }));
+    const delivered = trips.reduce((s, t) => s + Math.max(0, t.taken - t.fullReturned), 0);
+    const salary = Math.round(delivered * rateNum * 100) / 100;
     earnedByCourier.set(courierId, (earnedByCourier.get(courierId) ?? 0) + salary);
-    const createdAt = new Date(dateIso); createdAt.setUTCHours(rnd(10, 18), rnd(0, 59));
+    const day = new Date(dateIso); // dateIso — начало дня
+    const createdAt = new Date(dateIso); createdAt.setUTCHours(rnd(10, 20), rnd(0, 59));
     const withItem = Math.random() < 0.15 && otherProducts.length > 0 ? pick(otherProducts) : null;
     await prisma.warehouseReport.create({
       data: {
         courierId, cashierId: cashier.id,
-        fullTaken, emptyReturned, fullReturned,
+        date: day,
         waterPrice: new Prisma.Decimal(WATER), bottlePrice: new Prisma.Decimal(BOTTLE),
         bottleRate: new Prisma.Decimal(rateStr), salary: new Prisma.Decimal(salary),
         note: Math.random() < 0.12 ? pick(NOTES) : null,
         createdAt,
+        trips: { create: trips.map((t) => ({ seq: t.seq, taken: t.taken, emptyReturned: t.emptyReturned, fullReturned: t.fullReturned })) },
         items: withItem
           ? { create: [{ name: withItem.name, amount: new Prisma.Decimal(Number(withItem.price) * rnd(1, 3)) }] }
           : undefined,

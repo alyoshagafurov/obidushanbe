@@ -124,11 +124,10 @@ export const getWarehouse = (date?: string) =>
   api.get('/cashier/warehouse', { params: { date } }).then(
     (r) => r.data as { reports: WarehouseReportDto[]; summary: WarehouseDaySummary },
   );
-export const createWarehouseReport = (input: {
+export const saveWarehouseReport = (input: {
   courierId: string;
-  fullTaken: number;
-  emptyReturned: number;
-  fullReturned?: number;
+  date?: string;
+  trips: { taken: number; emptyReturned?: number; fullReturned?: number }[];
   note?: string;
   items?: { name: string; amount: number }[];
 }) => api.post('/cashier/warehouse', input).then((r) => r.data as WarehouseReportDto);

@@ -237,26 +237,39 @@ model Payout {
 // Доставлено 20л = fullTaken − fullReturned; зарплата = доставлено × bottleRate (снимок).
 // items — прочие товары (кулер/0.5л/помпа): идут в деньги, но НЕ в зарплату.
 model WarehouseReport {
-  id            String   @id @default(cuid())
-  courierId     String
-  courier       User     @relation("CourierWarehouse", fields: [courierId], references: [id])
-  cashierId     String
-  cashier       User     @relation("CashierWarehouse", fields: [cashierId], references: [id])
-  fullTaken     Int
-  emptyReturned Int
-  fullReturned  Int      @default(0)
-  waterPrice    Decimal  @db.Decimal(10, 2)
-  bottlePrice   Decimal  @db.Decimal(10, 2)
-  // Снимок ставки за 20л и посчитанная зарплата на момент отчёта.
-  bottleRate    Decimal  @db.Decimal(10, 2) @default(0)
-  salary        Decimal  @db.Decimal(10, 2) @default(0)
-  note          String?
-  createdAt     DateTime @default(now())
+  id          String   @id @default(cuid())
+  courierId   String
+  courier     User     @relation("CourierWarehouse", fields: [courierId], references: [id])
+  cashierId   String
+  cashier     User     @relation("CashierWarehouse", fields: [cashierId], references: [id])
+  date        DateTime // нормализовано к началу дня (UTC 00:00) — ключ дня
+  waterPrice  Decimal  @db.Decimal(10, 2)
+  bottlePrice Decimal  @db.Decimal(10, 2)
+  // Снимок ставки за 20л и посчитанная зарплата.
+  bottleRate  Decimal  @db.Decimal(10, 2) @default(0)
+  salary      Decimal  @db.Decimal(10, 2) @default(0)
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  items         WarehouseReportItem[]
+  trips WarehouseTrip[]
+  items WarehouseReportItem[]
 
-  @@index([courierId])
-  @@index([createdAt])
+  @@unique([courierId, date])
+  @@index([date])
+}
+
+// Рейс (заезд на склад) внутри дневного отчёта: взял / принёс пустых / вернул полных.
+model WarehouseTrip {
+  id            String          @id @default(cuid())
+  reportId      String
+  report        WarehouseReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  seq           Int             // № рейса (1, 2, 3…)
+  taken         Int             @default(0)
+  emptyReturned Int             @default(0)
+  fullReturned  Int             @default(0)
+
+  @@index([reportId])
 }
 
 // Строка «Ещё» в отчёте: кассир пишет название и сумму вручную (кулер, помпа и т.п.).

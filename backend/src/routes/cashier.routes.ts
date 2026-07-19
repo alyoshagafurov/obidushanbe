@@ -13,7 +13,7 @@ import {
   setRate,
   listPayouts,
 } from '../services/cashier.service';
-import { createReport, listReports, listCourierReports, deleteReport } from '../services/warehouse.service';
+import { saveReport, listReports, listCourierReports, deleteReport } from '../services/warehouse.service';
 import {
   cashierDateQuery,
   cashierPayoutSchema,
@@ -71,12 +71,12 @@ cashierRouter.get(
   }),
 );
 
-// POST /cashier/warehouse — новый отчёт по доставщику
+// POST /cashier/warehouse — сохранить дневной отчёт доставщика (upsert по доставщик+день)
 cashierRouter.post(
   '/warehouse',
   validate({ body: warehouseReportSchema }),
   asyncHandler(async (req, res) => {
-    res.json(await createReport(req.user!.id, req.body));
+    res.json(await saveReport(req.user!.id, req.body));
   }),
 );
 

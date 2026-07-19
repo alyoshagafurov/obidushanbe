@@ -53,7 +53,7 @@ export function DaySummary() {
                     <button className="btn btn--ghost btn--sm" onClick={() => confirm('Удалить отчёт?') && del.mutate(r.id)}>✕</button>
                   </div>
                   <div className="row" style={{ gap: 16, marginTop: 8, flexWrap: 'wrap' }}>
-                    <span className="hairline-muted" style={{ fontSize: 13 }}>Взял <b>{r.fullTaken}</b> · пустых <b>{r.emptyReturned}</b></span>
+                    <span className="hairline-muted" style={{ fontSize: 13 }}>Рейсов: <b>{r.trips.length}</b> · взял <b>{r.fullTaken}</b> · пустых <b>{r.emptyReturned}</b>{r.fullReturned > 0 ? <> · полных назад <b>{r.fullReturned}</b></> : null}</span>
                   </div>
                   <div className="row" style={{ gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                     <span className="chip">Доставлено 20л: {r.fullSold}</span>
