@@ -46,34 +46,35 @@ interface ItemInput {
   amount: number;
 }
 
-/** Производные величины по рейсам + «Ещё». */
+/**
+ * Производные величины по рейсам + «Ещё».
+ * Деньги «к сдаче» = доставлено × вода + Σ«Ещё» (бочку/кулер кассир пишет в «Ещё» вручную).
+ * Доставлено = Σ(взял). «Вернул» (пустые) — для сверки, на деньги не влияет.
+ */
 export function computeReport(
   trips: { taken: number; emptyReturned: number; fullReturned: number }[],
   opts: { waterPrice: number; bottlePrice: number; bottleRate: number; items?: { amount: number }[] },
 ) {
-  let fullTaken = 0, emptyReturned = 0, fullReturned = 0, fullSold = 0, bottlesSold = 0;
+  let fullTaken = 0, emptyReturned = 0, fullReturned = 0, fullSold = 0;
   for (const t of trips) {
-    const deliveredTrip = Math.max(0, t.taken - t.fullReturned);
     fullTaken += t.taken;
     emptyReturned += t.emptyReturned;
     fullReturned += t.fullReturned;
-    fullSold += deliveredTrip;
-    bottlesSold += Math.max(0, deliveredTrip - t.emptyReturned);
+    fullSold += Math.max(0, t.taken - t.fullReturned); // доставлено
   }
   const itemsRevenue = (opts.items ?? []).reduce((s, it) => s + it.amount, 0);
   const waterRevenue = fullSold * opts.waterPrice;
-  const bottleRevenue = bottlesSold * opts.bottlePrice;
   const salary = fullSold * opts.bottleRate;
   return {
     fullTaken,
     emptyReturned,
     fullReturned,
     fullSold,
-    bottlesSold,
+    bottlesSold: 0,
     waterRevenue: round2(waterRevenue),
-    bottleRevenue: round2(bottleRevenue),
+    bottleRevenue: 0,
     itemsRevenue: round2(itemsRevenue),
-    total: round2(waterRevenue + bottleRevenue + itemsRevenue),
+    total: round2(waterRevenue + itemsRevenue),
     salary: round2(salary),
   };
 }

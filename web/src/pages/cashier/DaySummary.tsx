@@ -41,7 +41,7 @@ export function DaySummary() {
               <div><div className="revenue__label">За день · к сдаче</div><div className="revenue__value">{money(wh.data!.summary.total)}</div></div>
               <div style={{ textAlign: 'right' }}><div className="revenue__label">Зарплата всем</div><div className="revenue__value" style={{ color: '#7ee0a8' }}>{money(wh.data!.summary.salaryTotal)}</div></div>
             </div>
-            <div className="revenue__sub">Доставлено 20л: {wh.data!.summary.fullSold} · с бочкой: {wh.data!.summary.bottlesSold} · отчётов: {wh.data!.summary.reportsCount}</div>
+            <div className="revenue__sub">Доставлено 20л: {wh.data!.summary.fullSold} · отчётов: {wh.data!.summary.reportsCount}</div>
           </div>
 
           <div className="stack" style={{ marginTop: 16 }}>
@@ -57,7 +57,6 @@ export function DaySummary() {
                   </div>
                   <div className="row" style={{ gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                     <span className="chip">Доставлено 20л: {r.fullSold}</span>
-                    {r.bottlesSold > 0 && <span className="chip">С бочкой: {r.bottlesSold}</span>}
                     {r.items.map((it) => <span key={it.id} className="chip">{it.name}: {money(it.amount)}</span>)}
                   </div>
                   <div className="divider" />

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BOTTLE_PRICE, WATER_PRICE, CourierPayrollRow, WarehouseReportDto } from '@obi/shared';
+import { WATER_PRICE, CourierPayrollRow, WarehouseReportDto } from '@obi/shared';
 import { getPayroll, getWarehouse, saveWarehouseReport } from '../../api';
 import { apiError } from '../../lib/api';
 import { money } from '../../lib/format';
@@ -13,7 +13,7 @@ const num = (s: string) => parseInt(s || '0', 10) || 0;
 const dec = (s: string) => parseFloat((s || '0').replace(',', '.')) || 0;
 const rid = () => Math.random().toString(36).slice(2);
 
-type TripRow = { key: string; taken: string; empty: string; full: string };
+type TripRow = { key: string; taken: string; empty: string };
 type ExtraRow = { key: string; name: string; amount: string };
 
 export function Report() {
@@ -37,7 +37,7 @@ export function Report() {
       </div>
 
       {loading ? <Spinner /> : err ? <ErrorBox message={apiError(err)} onRetry={() => { couriers.refetch(); wh.refetch(); }} /> : (
-        <div className="stack" style={{ maxWidth: 620, margin: '0 auto' }}>
+        <div className="sheet">
           {(couriers.data ?? []).map((c) => {
             const report = wh.data!.reports.find((r) => r.courierId === c.courierId);
             return <CourierSheet key={c.courierId + date} courier={c} date={date} report={report} />;
@@ -54,34 +54,24 @@ function CourierSheet({ courier, date, report }: { courier: CourierPayrollRow; d
 
   const [trips, setTrips] = useState<TripRow[]>(() =>
     report && report.trips.length
-      ? report.trips.map((t) => ({ key: rid(), taken: String(t.taken), empty: String(t.emptyReturned), full: t.fullReturned ? String(t.fullReturned) : '' }))
-      : [{ key: rid(), taken: '', empty: '', full: '' }],
+      ? report.trips.map((t) => ({ key: rid(), taken: String(t.taken), empty: t.emptyReturned ? String(t.emptyReturned) : '' }))
+      : [{ key: rid(), taken: '', empty: '' }],
   );
   const [note, setNote] = useState(report?.note ?? '');
   const [extras, setExtras] = useState<ExtraRow[]>(() => (report?.items ?? []).map((i) => ({ key: rid(), name: i.name, amount: String(i.amount) })));
-  const [open, setOpen] = useState(!!report); // раскрыт, если уже есть данные
+  const [open, setOpen] = useState(!!report);
 
   const preview = useMemo(() => {
-    let delivered = 0, soldBottle = 0;
-    for (const t of trips) {
-      const d = Math.max(0, num(t.taken) - num(t.full));
-      delivered += d;
-      soldBottle += Math.max(0, d - num(t.empty));
-    }
+    const delivered = trips.reduce((s, t) => s + num(t.taken), 0);
     const extrasSum = extras.reduce((s, e) => s + dec(e.amount), 0);
-    return {
-      delivered,
-      soldBottle,
-      total: delivered * WATER_PRICE + soldBottle * BOTTLE_PRICE + extrasSum,
-      salary: delivered * courier.rate,
-    };
+    return { delivered, total: delivered * WATER_PRICE + extrasSum, salary: delivered * courier.rate };
   }, [trips, extras, courier.rate]);
 
   const save = useMutation({
     mutationFn: () => saveWarehouseReport({
       courierId: courier.courierId,
       date,
-      trips: trips.map((t) => ({ taken: num(t.taken), emptyReturned: num(t.empty), fullReturned: num(t.full) })).filter((t) => t.taken > 0 || t.emptyReturned > 0 || t.fullReturned > 0),
+      trips: trips.map((t) => ({ taken: num(t.taken), emptyReturned: num(t.empty) })).filter((t) => t.taken > 0 || t.emptyReturned > 0),
       note: note.trim() || undefined,
       items: extras.filter((e) => e.name.trim() && dec(e.amount) > 0).map((e) => ({ name: e.name.trim(), amount: dec(e.amount) })),
     }),
@@ -96,78 +86,61 @@ function CourierSheet({ courier, date, report }: { courier: CourierPayrollRow; d
   });
 
   const setTrip = (key: string, patch: Partial<TripRow>) => setTrips((s) => s.map((t) => (t.key === key ? { ...t, ...patch } : t)));
-  const addTrip = () => setTrips((s) => [...s, { key: rid(), taken: '', empty: '', full: '' }]);
-  const removeTrip = (key: string) => setTrips((s) => (s.length > 1 ? s.filter((t) => t.key !== key) : s));
-
-  const onlyDigits = (v: string) => v.replace(/\D/g, '');
+  const digits = (v: string) => v.replace(/\D/g, '');
+  const initial = (courier.courierName || '?').trim().charAt(0).toUpperCase();
 
   return (
-    <div className="card" style={{ padding: 16 }}>
-      {/* Заголовок карточки — кликабельный */}
-      <button
-        onClick={() => setOpen((o) => !o)}
-        style={{ width: '100%', background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}
-      >
-        <div>
-          <b style={{ fontSize: 17 }}>{courier.courierName}</b>
-          <div className="hairline-muted" style={{ fontSize: 13 }}>ставка {courier.rate.toFixed(2)} · доставлено {preview.delivered}</div>
-        </div>
-        <div style={{ textAlign: 'right' }}>
-          <div className="hairline-muted" style={{ fontSize: 12 }}>к сдаче</div>
-          <b style={{ fontSize: 18 }}>{money(preview.total)}</b>
-        </div>
+    <div className={`scard ${open ? 'scard--open' : ''}`}>
+      <button className="scard__head" onClick={() => setOpen((o) => !o)}>
+        <span className="scard__ava">{initial}</span>
+        <span>
+          <span className="scard__name">{courier.courierName}</span>
+          <span className="scard__meta">ставка {courier.rate.toFixed(2)} · доставлено {preview.delivered}</span>
+        </span>
+        <span className="scard__money"><small>к сдаче</small><b>{money(preview.total)}</b></span>
       </button>
 
       {open && (
-        <>
-          <div className="divider" />
-          {/* Рейсы */}
-          <div className="stack">
-            {trips.map((t, i) => (
-              <div key={t.key}>
-                <div className="row-between" style={{ marginBottom: 6 }}>
-                  <span className="label" style={{ margin: 0 }}>Рейс {i + 1}</span>
-                  {trips.length > 1 && <button className="btn btn--ghost btn--sm" style={{ height: 26, padding: '0 8px' }} onClick={() => removeTrip(t.key)}>убрать</button>}
-                </div>
-                <div className="row" style={{ gap: 8 }}>
-                  <label style={{ flex: 1 }}><span className="hairline-muted" style={{ fontSize: 11 }}>Взял</span>
-                    <input className="input" inputMode="numeric" value={t.taken} onChange={(e) => setTrip(t.key, { taken: onlyDigits(e.target.value) })} placeholder="100" /></label>
-                  <label style={{ flex: 1 }}><span className="hairline-muted" style={{ fontSize: 11 }}>Пустых</span>
-                    <input className="input" inputMode="numeric" value={t.empty} onChange={(e) => setTrip(t.key, { empty: onlyDigits(e.target.value) })} placeholder="95" /></label>
-                  <label style={{ flex: 1 }}><span className="hairline-muted" style={{ fontSize: 11 }}>Полных назад</span>
-                    <input className="input" inputMode="numeric" value={t.full} onChange={(e) => setTrip(t.key, { full: onlyDigits(e.target.value) })} placeholder="0" /></label>
-                </div>
+        <div className="scard__body">
+          {trips.map((t, i) => (
+            <div className="trip" key={t.key}>
+              <div className="trip__head">
+                <span className="trip__badge">🚚 Рейс {i + 1}</span>
+                {trips.length > 1 && <button className="trip__rm" onClick={() => setTrips((s) => s.filter((x) => x.key !== t.key))}>удалить</button>}
               </div>
-            ))}
-          </div>
-          <button className="btn btn--ghost btn--sm btn--block" style={{ marginTop: 10 }} onClick={addTrip}>+ рейс</button>
+              <div className="trip__grid">
+                <label className="minf"><span>Взял</span>
+                  <input className="input" inputMode="numeric" value={t.taken} onChange={(e) => setTrip(t.key, { taken: digits(e.target.value) })} placeholder="100" /></label>
+                <label className="minf"><span>Вернул</span>
+                  <input className="input" inputMode="numeric" value={t.empty} onChange={(e) => setTrip(t.key, { empty: digits(e.target.value) })} placeholder="100" /></label>
+              </div>
+            </div>
+          ))}
 
-          {/* Ещё */}
+          <button className="dashbtn" onClick={() => setTrips((s) => [...s, { key: rid(), taken: '', empty: '' }])}>+ рейс</button>
+
           {extras.length > 0 && (
-            <div className="stack" style={{ marginTop: 12 }}>
+            <div style={{ marginTop: 12 }}>
               {extras.map((e) => (
-                <div key={e.key} className="row" style={{ gap: 8 }}>
-                  <input className="input grow" value={e.name} onChange={(ev) => setExtras((s) => s.map((x) => (x.key === e.key ? { ...x, name: ev.target.value } : x)))} placeholder="Напр.: Кулер" />
+                <div className="xtra" key={e.key}>
+                  <input className="input" value={e.name} onChange={(ev) => setExtras((s) => s.map((x) => (x.key === e.key ? { ...x, name: ev.target.value } : x)))} placeholder="Напр.: Бочка" />
                   <input className="input" style={{ width: 110 }} inputMode="decimal" value={e.amount} onChange={(ev) => setExtras((s) => s.map((x) => (x.key === e.key ? { ...x, amount: ev.target.value.replace(/[^\d.,]/g, '') } : x)))} placeholder="сумма" />
                   <button className="btn btn--ghost btn--sm" onClick={() => setExtras((s) => s.filter((x) => x.key !== e.key))}>✕</button>
                 </div>
               ))}
             </div>
           )}
-          <button className="btn btn--ghost btn--sm btn--block" style={{ marginTop: 8 }} onClick={() => setExtras((s) => [...s, { key: rid(), name: '', amount: '' }])}>+ Ещё (кулер, помпа…)</button>
+          <button className="dashbtn" style={{ marginTop: extras.length ? 0 : 8 }} onClick={() => setExtras((s) => [...s, { key: rid(), name: '', amount: '' }])}>+ Ещё (бочка, кулер, помпа…)</button>
 
-          <div className="field" style={{ marginTop: 12 }}>
+          <div className="field" style={{ marginTop: 14 }}>
             <label className="label">Заметка</label>
             <textarea className="textarea" value={note} onChange={(e) => setNote(e.target.value)} placeholder="напр.: 1 бутыль с дыркой" style={{ minHeight: 52 }} />
           </div>
 
-          <div className="row-between" style={{ background: 'var(--surface-alt)', borderRadius: 12, padding: '10px 14px', marginBottom: 12 }}>
-            <span className="hairline-muted">С бочкой: <b style={{ color: 'var(--text)' }}>{preview.soldBottle}</b></span>
-            <span className="hairline-muted">Зарплата: <b style={{ color: 'var(--success)' }}>{money(preview.salary)}</b></span>
-          </div>
+          <div className="scard__salary"><span>Зарплата доставщику</span><b>{money(preview.salary)}</b></div>
 
-          <button className="btn btn--block" disabled={save.isPending} onClick={() => save.mutate()}>Сохранить · {money(preview.total)}</button>
-        </>
+          <button className="btn btn--block btn--lg" disabled={save.isPending} onClick={() => save.mutate()}>Сохранить · {money(preview.total)}</button>
+        </div>
       )}
     </div>
   );
